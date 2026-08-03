@@ -1,0 +1,2377 @@
+<!file:///data/user/0/com.foxdebug.acodefree/files/public/index.html html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Billiards Dashboard</title>
+
+  <style>
+/* =====================
+   Theme variables
+   ===================== */
+:root{
+  --bg0:#000;
+  --bg1:#05070d;
+  --bg2:#0a1220;
+  --panel:rgba(12,18,28,.92);
+  --panel-2:rgba(17,24,39,.9);
+  --line:rgba(255,255,255,.08);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --blue:#3b82f6;
+  --green:#22c55e;
+  --amber:#f59e0b;
+  --red:#ef4444;
+  --violet:#8b5cf6;
+}
+*, *::before, *::after { box-sizing:border-box; }
+html,body{height:100%;}
+body{
+  margin:0;
+  padding:14px;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at top, rgba(59,130,246,.12) 0%, rgba(10,18,32,.86) 34%, rgba(2,4,8,1) 100%);
+  color:var(--text);
+  font-family:Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* =====================
+   Main layout
+   ===================== */
+#wrapper{
+  max-width: 1450px;
+  margin: 0 auto;
+}
+
+
+/* =====================
+   Top header
+   ===================== */
+#header{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:14px;
+}
+#logoSection{
+  min-width:0;
+  flex:1 1 auto;
+}
+#logoSection h1{
+  margin:0;
+  font-size:clamp(28px,4.8vw,54px);
+  line-height:.94;
+  font-weight:800;
+  letter-spacing:-.04em;
+  color:#fff;
+  text-wrap:balance;
+  max-width: 860px;
+}
+#logoSection p{
+  margin:8px 0 0;
+  font-size:clamp(12px,1.6vw,16px);
+  color:#8d96a8;
+}
+#topRight{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex:0 0 auto;
+  padding-top:2px;
+}
+.dateCard{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-height:52px;
+  background:linear-gradient(180deg, rgba(20,28,43,.92), rgba(10,15,25,.92));
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:10px 14px;
+  box-shadow:0 10px 28px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.04);
+  backdrop-filter: blur(10px);
+}
+.dateCard strong{font-size:13px;color:#fff;display:block;line-height:1.1}
+.dateCard small{font-size:11px;color:#8c96a8}
+.dateCard span{font-size:18px !important; line-height:1;}
+
+#adminButton{
+  min-height:52px;
+  padding:0 18px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(180deg,#2f6bff,#2456e9);
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  box-shadow:0 12px 24px rgba(37,99,235,.28);
+}
+
+#discordButton{
+  min-height:52px;
+  padding:0 18px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(180deg,#5865f2,#404eed);
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  box-shadow:0 12px 24px rgba(88,101,242,.26);
+}
+
+#staffBadge{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 14px;
+  border-radius:14px;
+  background:linear-gradient(180deg, rgba(20,28,43,.92), rgba(10,15,25,.92));
+  border:1px solid var(--line);
+  box-shadow:0 10px 28px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.04);
+  color:#dbeafe;
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+#staffBadge span{
+  color:#93c5fd;
+}
+
+
+/* =====================
+   Dashboard stat cards
+   ===================== */
+#stats{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:12px;
+  margin: 10px 0 12px;
+}
+.card{
+  position:relative;
+  overflow:hidden;
+  min-height:132px;
+  padding:15px 16px 14px;
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(18,25,37,.95), rgba(10,15,23,.92));
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 12px 28px rgba(0,0,0,.35);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:3px;
+  background:linear-gradient(90deg, rgba(59,130,246,.9), rgba(96,165,250,.55));
+}
+.cardIcon{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.04);
+  font-size:21px;
+  box-shadow: inset 0 1px rgba(255,255,255,.06);
+  margin-bottom:4px;
+}
+.cardTitle{
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#8f98a9;
+  line-height:1.2;
+}
+.cardValue{
+  font-size:clamp(24px,3vw,34px);
+  font-weight:900;
+  line-height:1;
+  letter-spacing:-.03em;
+  color:#fff;
+  margin-top:4px;
+  word-break:break-word;
+}
+#revenue{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:14px;
+  background:rgba(9,14,22,.55);
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+  color:#ffe166;
+  text-shadow:0 0 14px rgba(255,225,102,.18);
+  font-size:clamp(18px,2.5vw,30px);
+  max-width:100%;
+}
+.cardFooter{
+  margin-top:auto;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  color:#8e9bb1;
+  white-space:nowrap;
+}
+.cardFooter::before{
+  content:"";
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 10px rgba(34,197,94,.65);
+  flex:0 0 auto;
+}
+
+.historyToolbar{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin:8px 0 12px;
+}
+.historyToolbar input{
+  flex:1 1 auto;
+  min-width:0;
+  min-height:44px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:#0b1220;
+  color:#fff;
+  outline:none;
+}
+.historyToolbar input:focus{
+  border-color:rgba(96,165,250,.6);
+  box-shadow:0 0 0 3px rgba(59,130,246,.18);
+}
+.historyCount{
+  font-size:12px;
+  color:#94a3b8;
+  margin:0 0 10px;
+}
+.undoPanel{
+  margin:0 0 12px;
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(59,130,246,.22);
+  background:linear-gradient(180deg, rgba(17,35,68,.92), rgba(10,18,32,.92));
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+.undoPanel strong{display:block;margin-bottom:4px}
+.undoPanel small{display:block;color:#a5b4fc;line-height:1.35}
+.undoPanel .undoActions{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+.undoPanel .undoActions button{
+  min-height:42px;
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:14px;
+  font-weight:800;
+}
+.occupancyValue{
+  font-size:clamp(20px,2.4vw,28px);
+  font-weight:900;
+  color:#fff;
+  line-height:1;
+}
+.revenueCard{
+  background:linear-gradient(180deg, rgba(85,59,0,.96), rgba(25,19,8,.95));
+  border-color:rgba(255,215,0,.16);
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 12px 28px rgba(0,0,0,.35), 0 0 24px rgba(255,196,0,.06);
+}
+.revenueCard::before{
+  background:linear-gradient(90deg, #f59e0b, #fde68a);
+}
+.revenueCard .cardIcon{
+  background:rgba(255,215,0,.10);
+  color:#ffdd57;
+}
+
+
+/* =====================
+   Main dashboard panels
+   ===================== */
+#dashboardContent{
+  display:grid;
+  grid-template-columns:minmax(0,1.95fr) minmax(300px,.95fr);
+  gap:12px;
+  align-items:start;
+  margin-top:0;
+}
+#tablesSection,
+#recentSessions{
+  min-width:0;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(15,22,35,.94), rgba(8,12,20,.96));
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:22px;
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 16px 36px rgba(0,0,0,.40);
+}
+#tablesSection::before,
+#recentSessions::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:3px;
+  background:linear-gradient(90deg, #3b82f6, #93c5fd);
+}
+#tablesSection{ padding:16px; }
+#recentSessions{ padding:16px; }
+
+.sectionHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+#tablesTitle,
+#recentSessions h2{
+  margin:0;
+  font-size:clamp(18px,2.2vw,24px);
+  font-weight:800;
+  line-height:1.15;
+  letter-spacing:-.02em;
+}
+#tableLegend{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px 16px;
+  margin:0 0 12px;
+  color:#aeb6c6;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+#tableLegend span{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+#tableLegend span::before{
+  content:"";
+  width:8px;height:8px;border-radius:999px;
+  background:#94a3b8;
+  box-shadow:0 0 10px rgba(148,163,184,.35);
+}
+#tableLegend span:nth-child(1)::before{background:#84cc16}
+#tableLegend span:nth-child(2)::before{background:#f59e0b}
+#tableLegend span:nth-child(3)::before{background:#ef4444}
+#tableLegend span:nth-child(4)::before{background:#3b82f6}
+#tableLegend span:nth-child(5)::before{background:#6b7280}
+
+#tables{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+}
+.table{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:4px;
+  min-height:110px;
+  padding:10px 8px 12px;
+  border-radius:18px;
+  cursor:pointer;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 1px rgba(255,255,255,.07), 0 10px 24px rgba(0,0,0,.38);
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+  background:linear-gradient(180deg, rgba(14,32,20,.95), rgba(9,22,14,.95));
+}
+.table::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg, rgba(255,255,255,.05), transparent 45%);
+  pointer-events:none;
+}
+.table::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  pointer-events:none;
+}
+.table:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.05);
+  box-shadow: inset 0 1px rgba(255,255,255,.08), 0 14px 28px rgba(0,0,0,.44), 0 0 18px rgba(255,255,255,.05);
+}
+.tableCorner{position:absolute;width:14px;height:14px;opacity:.75;pointer-events:none}
+.cornerTL{top:9px;left:9px;border-top:2px solid rgba(255,255,255,.30);border-left:2px solid rgba(255,255,255,.30);border-radius:7px 0 0 0}
+.cornerTR{top:9px;right:9px;border-top:2px solid rgba(255,255,255,.30);border-right:2px solid rgba(255,255,255,.30);border-radius:0 7px 0 0}
+.cornerBL{bottom:9px;left:9px;border-bottom:2px solid rgba(255,255,255,.30);border-left:2px solid rgba(255,255,255,.30);border-radius:0 0 0 7px}
+.cornerBR{bottom:9px;right:9px;border-bottom:2px solid rgba(255,255,255,.30);border-right:2px solid rgba(255,255,255,.30);border-radius:0 0 7px 0}
+.tableAccent{
+  position:absolute;
+  left:50%;
+  bottom:8px;
+  transform:translateX(-50%);
+  width:42px;
+  height:4px;
+  border-radius:999px;
+  overflow:hidden;
+}
+.tableAccent::before{
+  content:"";
+  position:absolute;inset:0;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(255,255,255,.55), transparent);
+}
+.available{background:linear-gradient(180deg,#12351f,#0c1d14)}
+.playing{background:linear-gradient(180deg,#3f2e08,#231700)}
+.occupied{background:linear-gradient(180deg,#3a1111,#1f0b0b)}
+.reserved{background:linear-gradient(180deg,#12304d,#091627)}
+.maintenance{background:linear-gradient(180deg,#1f2937,#0d131a)}
+
+.available .tableAccent{background:linear-gradient(180deg,#1f7a34,#144c21);box-shadow:0 0 10px rgba(46,230,107,.7)}
+.playing .tableAccent{background:linear-gradient(180deg,#c46e00,#6e4304);box-shadow:0 0 10px rgba(255,176,32,.6)}
+.occupied .tableAccent{background:linear-gradient(180deg,#dc2626,#7f1d1d);box-shadow:0 0 10px rgba(255,82,82,.6)}
+.reserved .tableAccent{background:linear-gradient(180deg,#2563eb,#173a73);box-shadow:0 0 10px rgba(59,130,246,.65)}
+.maintenance .tableAccent{background:linear-gradient(180deg,#6b7280,#374151);box-shadow:0 0 10px rgba(156,163,175,.55)}
+.available::before{border-color:rgba(46,230,107,.16)}
+.playing::before{border-color:rgba(255,176,32,.16)}
+.occupied::before{border-color:rgba(255,82,82,.16)}
+.reserved::before{border-color:rgba(59,130,246,.16)}
+.maintenance::before{border-color:rgba(156,163,175,.14)}
+
+.tableNumber{
+  z-index:1;
+  font-size:clamp(24px,3vw,34px);
+  font-weight:900;
+  line-height:1;
+  text-shadow:0 1px 4px rgba(0,0,0,.42);
+}
+.tableStatus{
+  z-index:1;
+  min-height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:700;
+  color:rgba(255,255,255,.95);
+  letter-spacing:.01em;
+  padding:0 2px;
+  overflow-wrap:anywhere;
+}
+
+#recentSessions{
+  display:flex;
+  flex-direction:column;
+}
+.sectionHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.viewAllBtn{
+  background:transparent !important;
+  color:#93c5fd !important;
+  padding:0 !important;
+  border:none !important;
+  box-shadow:none !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+}
+#recentSessionsList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height:0;
+}
+.sessionItem{
+  width:100%;
+  text-align:left;
+  border:none;
+  border-left:3px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  padding:12px 12px 11px;
+  color:#e5e7eb;
+  cursor:pointer;
+  background:linear-gradient(180deg, rgba(18,25,37,.95), rgba(10,14,22,.95));
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 10px 20px rgba(0,0,0,.26);
+  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  position:relative;
+  overflow:hidden;
+}
+.sessionItem::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:3px;
+  background:#3b82f6;
+  opacity:.9;
+}
+.sessionItem:hover{
+  transform:translateY(-1px);
+  box-shadow: inset 0 1px rgba(255,255,255,.05), 0 12px 22px rgba(0,0,0,.32);
+}
+.sessionTimed::before{background:#ef4444}
+.sessionGames::before{background:#f59e0b}
+.sessionReserved::before{background:#3b82f6}
+.sessionDefault::before{background:#22c55e}
+.sessionTop{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+  font-size:12px;
+  margin-bottom:5px;
+}
+.sessionTop b{font-size:13px}
+.sessionMeta{
+  font-size:11px;
+  color:#94a3b8;
+  line-height:1.4;
+}
+.emptySessions{
+  text-align:center;
+  color:#94a3b8;
+  margin:24px 0 8px;
+  font-size:13px;
+}
+
+
+/* =====================
+   Summary strip
+   ===================== */
+#bottomSummary{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:0;
+  background:linear-gradient(180deg, rgba(15,22,35,.94), rgba(8,12,20,.96));
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 16px 34px rgba(0,0,0,.35);
+}
+.summaryCard{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  min-height:74px;
+  border-right:1px solid rgba(255,255,255,.06);
+  background:transparent;
+}
+.summaryCard:last-child{border-right:none}
+.summaryIcon{
+  width:38px;height:38px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:18px;
+  background:rgba(255,255,255,.05);
+  box-shadow: inset 0 1px rgba(255,255,255,.06);
+  flex:0 0 auto;
+}
+.summaryLabel{
+  font-size:10px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#98a2b3;
+  margin-bottom:2px;
+}
+.summaryValue{
+  font-size:18px;
+  font-weight:900;
+  line-height:1.1;
+  color:#fff;
+}
+.summarySub{
+  font-size:11px;
+  color:#8ea0b8;
+  margin-top:2px;
+}
+
+
+/* =====================
+   Modal / dialogs
+   ===================== */
+#modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  box-sizing:border-box;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);
+  z-index:9999;
+}
+.modalCard{
+  width:min(460px,100%);
+  max-height:min(92vh,860px);
+  overflow:auto;
+  background:linear-gradient(180deg, rgba(20,27,41,.98), rgba(9,14,24,.98));
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:24px;
+  box-shadow:0 28px 78px rgba(0,0,0,.58), inset 0 1px rgba(255,255,255,.05);
+  padding:20px;
+}
+.modalHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+#modalTitle{
+  margin:0;
+  font-size:clamp(20px,4vw,28px);
+  line-height:1.1;
+  color:#fff;
+}
+.modalSubtitle{
+  margin-top:6px;
+  font-size:13px;
+  color:#94a3b8;
+  line-height:1.35;
+}
+.modalCloseButton{
+  width:44px;
+  height:44px;
+  padding:0;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.06);
+  color:#e5e7eb;
+  font-size:18px;
+  font-weight:800;
+  box-shadow:none;
+  flex:0 0 auto;
+}
+#modalBody{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow-wrap:anywhere;
+}
+#modalBody button{
+  width:100%;
+  min-height:54px;
+  border-radius:16px;
+  padding:14px 16px;
+  font-size:16px;
+  font-weight:800;
+  background:linear-gradient(180deg,#2563eb,#1d4ed8);
+  color:white;
+  box-shadow:none;
+}
+#modalBody .modalCloseAction{background:linear-gradient(180deg,#334155,#1f2937)}
+#modalBody #endButton{background:linear-gradient(180deg,#dc2626,#991b1b)}
+#modalBody #snackButton{background:linear-gradient(180deg,#059669,#047857)}
+#modalBody #reserveButton{background:linear-gradient(180deg,#0f67ff,#0b4fd1)}
+#modalBody #maintenanceButton{background:linear-gradient(180deg,#4b5563,#374151)}
+#modalBody #addGameButton{background:linear-gradient(180deg,#f59e0b,#d97706)}
+#modalBody #removeGameButton{background:linear-gradient(180deg,#ef4444,#b91c1c)}
+#modalBody input{
+  width:100%;
+  box-sizing:border-box;
+  min-height:50px;
+  padding:13px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background:#0b1220;
+  color:white;
+  font-size:15px;
+  outline:none;
+}
+#modalBody input:focus{
+  border-color:rgba(96,165,250,.6);
+  box-shadow:0 0 0 3px rgba(59,130,246,.18);
+}
+.historyItem{
+  margin-bottom:10px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:inset 0 1px rgba(255,255,255,.03);
+}
+#recentSessions h2,
+#tablesTitle{display:flex;align-items:center;gap:8px}
+
+
+.analyticsGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0;
+}
+
+.analyticsCard{
+  padding:14px;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(18,25,37,.95), rgba(10,14,22,.95));
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+
+.analyticsCard b{
+  display:block;
+  font-size:18px;
+  margin-top:4px;
+}
+
+.analyticsCard small{
+  color:#94a3b8;
+  display:block;
+  margin-top:4px;
+  line-height:1.35;
+}
+
+.receiptCard{
+  background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(243,244,246,.98));
+  color:#111827;
+  border-radius:22px;
+  padding:18px;
+  border:1px solid rgba(17,24,39,.1);
+  box-shadow:0 18px 44px rgba(0,0,0,.25);
+}
+
+.receiptHeader{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:flex-start;
+  padding-bottom:12px;
+  margin-bottom:12px;
+  border-bottom:1px dashed rgba(17,24,39,.18);
+}
+
+.receiptHeader h3{
+  margin:0;
+  font-size:22px;
+  line-height:1.1;
+}
+
+.receiptHeader small,
+.receiptMeta{
+  color:#4b5563;
+}
+
+.receiptMeta{
+  line-height:1.5;
+  font-size:14px;
+}
+
+.receiptSection{
+  margin:12px 0;
+  padding:12px 0;
+  border-top:1px solid rgba(17,24,39,.08);
+}
+
+.receiptSection:first-of-type{
+  border-top:none;
+  padding-top:0;
+}
+
+.receiptRow{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:14px;
+  padding:5px 0;
+}
+
+.receiptTotal{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  font-size:18px;
+  font-weight:900;
+  margin-top:10px;
+}
+
+.receiptActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+
+.receiptActions button{
+  flex:1 1 150px;
+}
+
+.staffList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.staffItem{
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.staffItem b{
+  display:block;
+  margin-bottom:3px;
+}
+
+.tableManagerNote{
+  color:#94a3b8;
+  font-size:13px;
+  line-height:1.4;
+  margin-top:8px;
+}
+
+
+/* =====================
+   Print styles
+   ===================== */
+@media print{
+  body *{visibility:hidden !important;}
+  #modal, #modal *{visibility:visible !important;}
+  #modal{
+    position:fixed !important;
+    inset:0 !important;
+    background:#fff !important;
+    padding:0 !important;
+  }
+  .modalCard{
+    width:100% !important;
+    max-height:none !important;
+    border:none !important;
+    box-shadow:none !important;
+    border-radius:0 !important;
+    padding:0 !important;
+  }
+  .modalCloseButton,
+  .receiptActions,
+  #modalBody .modalCloseAction{
+    display:none !important;
+  }
+}
+
+
+/* =====================
+   Responsive layout
+   ===================== */
+@media (max-width: 560px){
+
+  #dashboardContent{grid-template-columns:1fr}
+}
+@media (max-width: 600px){
+  body{padding:10px}
+  #header{gap:12px}
+  #topRight{gap:8px}
+  .dateCard{padding:8px 10px; min-height:46px}
+  .dateCard span{font-size:16px !important}
+  #adminButton{min-height:46px;padding:0 14px;font-size:14px}
+  #stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #tables{grid-template-columns:repeat(3,minmax(0,1fr))}
+  #bottomSummary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #bottomSummary .summaryCard:nth-child(2n){border-right:none}
+  #bottomSummary .summaryCard:nth-child(odd){border-right:1px solid rgba(255,255,255,.06)}
+}
+@media (max-width: 430px){
+  #stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #tables{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #tablesSection,
+  #recentSessions{padding:12px}
+  .card{min-height:118px;padding:13px}
+  .table{min-height:100px;padding:9px 7px 11px}
+  .tableStatus{font-size:11px}
+  .summaryCard{padding:10px 12px;min-height:68px}
+  .summaryValue{font-size:16px}
+}
+</style>
+  
+
+</head>
+
+<body>
+<div id="wrapper">
+  <div id="header">
+
+    <div id="logoSection">
+        <h1>🎱 Billiards Management System</h1>
+        <p>Welcome back! Here's what's happening today.</p>
+    </div>
+
+    <div id="topRight">
+
+        <div class="dateCard">
+            <span style="font-size:28px;"> 🗓️</span>
+
+            <div>
+                <strong id="todayDate"></strong><br>
+                <small id="todayDay"></small>
+            </div>
+        </div>
+
+        <button id="adminButton" onclick="openAdmin()">
+            ⚙️ Admin
+        </button>
+
+    </div>
+
+  </div>
+
+    <div id="stats">
+    <div class="card revenueCard">
+        <div class="cardIcon">💰</div>
+        <div class="cardTitle">Today's Revenue</div>
+        <div class="cardValue" id="revenue">0 IQD</div>
+        <div class="cardFooter">Updated just now</div>
+    </div>
+
+    <div class="card">
+        <div class="cardIcon">🎱</div>
+        <div class="cardTitle">Games Played</div>
+        <div class="cardValue" id="dashGames">0</div>
+        <div class="cardFooter">Updated just now</div>
+    </div>
+
+    <div class="card">
+        <div class="cardIcon">🥤</div>
+        <div class="cardTitle">Snacks Sold</div>
+        <div class="cardValue" id="dashSnacks">0</div>
+        <div class="cardFooter">Updated just now</div>
+    </div>
+
+    <div class="card">
+        <div class="cardIcon">📜</div>
+        <div class="cardTitle">Sessions</div>
+        <div class="cardValue" id="dashSessions">0</div>
+        <div class="cardFooter">Updated just now</div>
+    </div>
+
+    <div class="card">
+        <div class="cardIcon">🪑</div>
+        <div class="cardTitle">Active Tables</div>
+        <div class="cardValue" id="dashTables">0</div>
+        <div class="cardFooter">Updated just now</div>
+    </div>
+
+    <div class="card">
+        <div class="cardIcon">📈</div>
+        <div class="cardTitle">Occupancy</div>
+        <div class="cardValue" id="dashOccupancy">0%</div>
+        <div class="cardFooter">Tables in use</div>
+    </div>
+</div>
+
+<div id="dashboardContent">
+
+    <div id="tablesSection">
+        <div class="sectionHead">
+            <h2 id="tablesTitle">🎱 Tables Overview</h2>
+        </div>
+
+        <div id="tableLegend">
+            <span>Available</span>
+            <span>Games</span>
+            <span>Timed</span>
+            <span>Reserved</span>
+            <span>Maintenance</span>
+        </div>
+
+        <div id="tables"></div>
+    </div>
+
+    <div id="recentSessions">
+        <div class="sectionHeader">
+            <h2>🕒 Recent Sessions</h2>
+            <button class="viewAllBtn" onclick="showHistory()">View All →</button>
+        </div>
+
+        <div id="recentSessionsList">
+            <div class="emptySessions">
+                No sessions yet
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="bottomSummary">
+    <div class="summaryCard">
+        <div class="summaryIcon">📊</div>
+        <div>
+            <div class="summaryLabel">Total Revenue</div>
+            <div class="summaryValue" id="summaryRevenue">0 IQD</div>
+            <div class="summarySub">Today</div>
+        </div>
+    </div>
+    <div class="summaryCard">
+        <div class="summaryIcon">🎮</div>
+        <div>
+            <div class="summaryLabel">Total Games</div>
+            <div class="summaryValue" id="summaryGames">0</div>
+            <div class="summarySub">Today</div>
+        </div>
+    </div>
+    <div class="summaryCard">
+        <div class="summaryIcon">🥤</div>
+        <div>
+            <div class="summaryLabel">Total Snacks</div>
+            <div class="summaryValue" id="summarySnacks">0</div>
+            <div class="summarySub">Today</div>
+        </div>
+    </div>
+    <div class="summaryCard">
+        <div class="summaryIcon">🧾</div>
+        <div>
+            <div class="summaryLabel">Total Sessions</div>
+            <div class="summaryValue" id="summarySessions">0</div>
+            <div class="summarySub">Today</div>
+        </div>
+    </div>
+</div>
+
+<div id="modal">
+  <div class="modalCard">
+    <div class="modalHeader">
+      <div>
+        <h2 id="modalTitle">Table</h2>
+        <div id="modalSubtitle" class="modalSubtitle"></div>
+      </div>
+      <button class="modalCloseButton" onclick="closeModal()" aria-label="Close modal">✕</button>
+    </div>
+
+    <div id="modalBody">
+      <button onclick="startTimed()">⏱ Timed Session</button>
+      <button onclick="startGames()">🎱 Games</button>
+      <button id="reserveButton" onclick="reserveTable()">🔵 Reserve</button>
+      <button id="maintenanceButton" onclick="maintenanceTable()">⚫ Maintenance</button>
+      <button id="snackButton" onclick="showSnacks()">🥤 Add Snack</button>
+      <button id="transferButton" onclick="transferTablePrompt()">↔ Transfer Table</button>
+      <button id="mergeButton" onclick="mergeTablePrompt()">🔗 Merge Table</button>
+      <button id="endButton" onclick="confirmEndSession()">🛑 End Session</button>
+      <button id="addGameButton" onclick="addGame()">➕ Add Game</button>
+      <button id="removeGameButton" onclick="removeGame()">➖ Remove Game</button>
+      <button class="modalCloseAction" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================
+   JavaScript
+   ===================== */
+
+/* 1) Configuration & state
+   2) Helpers & formatting
+   3) Rendering
+   4) Persistence
+   5) Sessions & tables
+   6) Snacks & receipts
+   7) History, analytics & admin
+   8) Staff management
+*/
+
+const $=id=>document.getElementById(id),TABLE_STATUS_CLASSES=["available","occupied","playing","reserved","maintenance"];
+
+/* App state */
+const container=$("tables");
+let selectedTable=null,timers={},startTimes={},activeSessions={},gameCounts={},pricePerHour=Number(localStorage.getItem("pricePerHour"))||5000,pricePerGame=Number(localStorage.getItem("pricePerGame"))||1000,reservations=JSON.parse(localStorage.getItem("reservations"))||{},snacks=JSON.parse(localStorage.getItem("snacks"))||{"🥤 Pepsi":1000,"🥤 Coca-Cola":1000,"💧 Water":500,"🍟 Chips":750,"🍫 Chocolate":1000},tableOrders=JSON.parse(localStorage.getItem("tableOrders"))||{},tableStates={},receipts=JSON.parse(localStorage.getItem("receipts"))||[],todayRevenue=Number(localStorage.getItem("revenue"))||0,sessionHistory=JSON.parse(localStorage.getItem("sessionHistory"))||[],sessionsCompleted=Number(localStorage.getItem("sessionsCompleted"))||0,gamesPlayedToday=Number(localStorage.getItem("gamesPlayedToday"))||0,snacksSoldToday=Number(localStorage.getItem("snacksSoldToday"))||0,adminPin=localStorage.getItem("adminPin")||"1234",lastEndedSession=JSON.parse(localStorage.getItem("lastEndedSession"))||null,historySearchQuery="",audioCtx=null,discordLink=localStorage.getItem("discordLink")||"https://discord.com",staffAccounts=JSON.parse(localStorage.getItem("staffAccounts"))||[{name:"Owner",pin:adminPin,role:"Owner"}],currentStaffName=localStorage.getItem("currentStaffName")||"Owner",totalTables=Number(localStorage.getItem("totalTables"))||15;
+
+const UNDO_WINDOW_MS=120000;
+
+
+/* Rendering */
+function renderTable(table,options={}){
+  const n=options.tableNumber||table.dataset.table,s=options.status||"",d=table.querySelector(".tableStatus");
+  table.querySelector(".tableNumber").textContent=n.replace("Table ","");
+  let html=s;
+  if(options.details){
+    const list=Array.isArray(options.details)?options.details:[options.details];
+    list.filter(Boolean).forEach(x=>html+=`<br>${x}`);
+  }
+  d.innerHTML=html;
+}
+
+function renderTables(){
+  if(!container) return;
+  const preserve=selectedTable?.dataset?.table||null;
+  const cards=[];
+  for(let i=1;i<=totalTables;i++){
+    const tableNumber=`Table ${i}`;
+    const state=(tableStates && tableStates[tableNumber]?.status) || "Available";
+    const safeState=(state||"Available").toLowerCase();
+    const display=state==="Reserved" ? "🔵 Reserved" : state==="Maintenance" ? "⚫ Maintenance" : state==="Occupied" ? "Occupied" : state==="Playing" ? "Playing" : "Available";
+    cards.push(`<div class="table ${safeState}" data-table="${tableNumber}" data-status="${state||"Available"}" onclick="toggleTable(this)"><div class="cornerTL tableCorner"></div><div class="cornerTR tableCorner"></div><div class="cornerBL tableCorner"></div><div class="cornerBR tableCorner"></div><div class="tableNumber">${i}</div><div class="tableStatus">${display}</div><div class="tableAccent"></div></div>`);
+  }
+  container.innerHTML=cards.join("");
+  if(preserve){
+    const restored=getTableByNumber(preserve);
+    if(restored) selectedTable=restored;
+  }
+}
+
+
+/* Time helpers */
+function getLocalDateKey(date=new Date()){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,"0");
+  const d=String(date.getDate()).padStart(2,"0");
+  return `${y}-${m}-${d}`;
+}
+
+function getTodaySessionKey(){
+  return `dailyState:${getLocalDateKey()}`;
+}
+
+function getTableStatusSummary(){
+  const tables=document.querySelectorAll(".table");
+  const active=[...tables].filter(t=>["Occupied","Playing"].includes(t.dataset.status)).length;
+  return {active, occupancy:tables.length ? Math.round((active / tables.length) * 100) : 0, total:tables.length};
+}
+
+
+/* Daily reset & undo */
+function clearUndoState(){
+  lastEndedSession=null;
+  localStorage.removeItem("lastEndedSession");
+}
+
+function storeUndoState(snapshot){
+  lastEndedSession={...snapshot, timestamp:Date.now()};
+  localStorage.setItem("lastEndedSession",JSON.stringify(lastEndedSession));
+}
+
+function isUndoAvailable(){
+  return !!lastEndedSession && (Date.now() - (lastEndedSession.timestamp||0)) <= UNDO_WINDOW_MS;
+}
+
+function resetDailyStats(reason="new day"){
+  todayRevenue=0;
+  sessionsCompleted=0;
+  gamesPlayedToday=0;
+  snacksSoldToday=0;
+  receipts=[];
+  localStorage.setItem("revenue",todayRevenue);
+  localStorage.setItem("sessionsCompleted",sessionsCompleted);
+  localStorage.setItem("gamesPlayedToday",gamesPlayedToday);
+  localStorage.setItem("snacksSoldToday",snacksSoldToday);
+  localStorage.setItem("receipts",JSON.stringify(receipts));
+  localStorage.setItem("dailyResetDate",getLocalDateKey());
+  updateRevenue();
+  updateDashboard();
+}
+
+function ensureDailyReset(){
+  const current=getLocalDateKey();
+  const stored=localStorage.getItem("dailyResetDate");
+  if(stored!==current){
+    resetDailyStats("rollover");
+  }
+}
+
+function scheduleDailyResetCheck(){
+  setInterval(()=>{
+    const current=getLocalDateKey();
+    const stored=localStorage.getItem("dailyResetDate");
+    if(stored!==current){
+      resetDailyStats("rollover");
+    }
+    if(lastEndedSession && !isUndoAvailable()){
+      clearUndoState();
+    }
+  },60000);
+}
+
+
+/* Table helpers */
+function applyTableStatusClass(table,status){
+  if(!table)return;
+  const normalized=(status||"Available");
+  TABLE_STATUS_CLASSES.forEach(c=>table.classList.remove(c));
+  table.classList.add(normalized.toLowerCase());
+  table.dataset.status=normalized;
+}
+
+function setTableView(table,status,display=status,details=[]){
+  applyTableStatusClass(table,status);
+  renderTable(table,{tableNumber:table.dataset.table,status:display,details});
+}
+
+
+
+/* Formatting */
+function formatIQD(value){
+  return `${Math.max(0,Math.round(Number(value)||0)).toLocaleString()} IQD`;
+}
+
+function getTableByNumber(tableNumber){
+  return [...document.querySelectorAll(".table")].find(t=>t.dataset.table===tableNumber)||null;
+}
+
+function getCurrentStaff(){
+  const match=staffAccounts.find(acc=>acc.name===currentStaffName);
+  return match||staffAccounts[0];
+}
+
+function updateStaffBadge(){
+  const badge=$("staffBadgeName");
+  if(badge) badge.textContent=`${getCurrentStaff()?.name||"Owner"} · ${getCurrentStaff()?.role||"Staff"}`;
+  localStorage.setItem("currentStaffName", getCurrentStaff()?.name||"Owner");
+}
+
+function saveStaffAccounts(){
+  localStorage.setItem("staffAccounts",JSON.stringify(staffAccounts));
+  localStorage.setItem("currentStaffName",currentStaffName);
+  updateStaffBadge();
+}
+
+function getActiveTableCount(){
+  return [...document.querySelectorAll(".table")].filter(t=>["Occupied","Playing"].includes(t.dataset.status)).length;
+}
+
+function getOccupancyPercent(){
+  const count=document.querySelectorAll(".table").length;
+  return count ? Math.round((getActiveTableCount()/count)*100) : 0;
+}
+
+function getTableSessionType(tableNumber){
+  return activeSessions[tableNumber]?.type || null;
+}
+
+function cleanupTableState(tableNumber){
+  clearInterval(timers[tableNumber]);
+  delete timers[tableNumber];
+  delete startTimes[tableNumber];
+  delete activeSessions[tableNumber];
+  delete gameCounts[tableNumber];
+  delete tableOrders[tableNumber];
+  delete reservations[tableNumber];
+}
+
+function saveTablesMeta(){
+  localStorage.setItem("totalTables",String(totalTables));
+}
+
+function renderAllTableState(){
+  renderTables();
+  loadData();
+  loadSessions();
+  updateStaffBadge();
+}
+
+function getTableNumberList(){
+  return [...document.querySelectorAll(".table")].map(t=>t.dataset.table);
+}
+
+function isTableAvailable(tableNumber){
+  const table=getTableByNumber(tableNumber);
+  return !!table && table.dataset.status==="Available";
+}
+
+function setCurrentStaff(name){
+  if(!staffAccounts.some(acc=>acc.name===name)) return false;
+  currentStaffName=name;
+  saveStaffAccounts();
+  return true;
+}
+
+function vibrateFeedback(type="click"){
+  try{
+    if(!navigator.vibrate) return;
+    const pattern={click:10,success:[12,24,12],warn:[20,35,20],error:[35,55,35]}[type]||10;
+    navigator.vibrate(pattern);
+  }catch(e){}
+}
+
+function playUiSound(type="click"){
+  try{
+    vibrateFeedback(type);
+    audioCtx||(audioCtx=new (window.AudioContext||window.webkitAudioContext)());
+    const ctx=audioCtx;
+    if(ctx.state==="suspended") ctx.resume();
+    const o=ctx.createOscillator(),g=ctx.createGain(),now=ctx.currentTime;
+    const preset={click:[620,.03,.03,"sine"],success:[740,.055,.05,"triangle"],warn:[320,.09,.06,"sawtooth"],error:[180,.12,.07,"square"]}[type]||[620,.03,.03,"sine"];
+    o.type=preset[3]; o.frequency.setValueAtTime(preset[0],now);
+    g.gain.setValueAtTime(.0001,now);
+    g.gain.exponentialRampToValueAtTime(preset[2],now+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,now+preset[1]);
+    o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now+preset[1]+.02);
+  }catch(e){}
+}
+
+function changeTableStatus(table,status,display,statusDetails=[]){
+  setTableView(table,status,display,statusDetails);
+}
+
+function getTableSnackCount(tableNumber){
+  let total=0,order=tableOrders[tableNumber]||{};
+  for(let item in order) total+=order[item];
+  return total;
+}
+
+function getTableSnackTotal(tableNumber){
+  let total=0,order=tableOrders[tableNumber]||{};
+  for(let item in order) total+=(snacks[item]||0)*order[item];
+  return total;
+}
+
+function getSnackReceipt(tableNumber){
+  let text="",total=0,order=tableOrders[tableNumber]||{};
+  for(let item in order){
+    const quantity=order[item],price=(snacks[item]||0)*quantity;
+    total+=price;
+    text+=`${item} ×${quantity} - ${price} IQD<br>`;
+  }
+  return{text,total};
+}
+
+
+/* Dashboard values */
+function updateRevenue(){ $("revenue").textContent=todayRevenue+" IQD"; updateSummaryStrip(); }
+
+function updateSummaryStrip(){
+  if($("summaryRevenue")) $("summaryRevenue").textContent=todayRevenue+" IQD";
+  if($("summaryGames")) $("summaryGames").textContent=gamesPlayedToday;
+  if($("summarySnacks")) $("summarySnacks").textContent=snacksSoldToday;
+  if($("summarySessions")) $("summarySessions").textContent=sessionsCompleted;
+}
+
+function updateDashboard(){
+  const summary=getTableStatusSummary();
+  $("dashGames").textContent=gamesPlayedToday;
+  $("dashSnacks").textContent=snacksSoldToday;
+  $("dashSessions").textContent=sessionsCompleted;
+  $("dashTables").textContent=summary.active;
+  $("dashOccupancy").textContent=`${summary.occupancy}%`;
+  updateSummaryStrip();
+}
+
+function updateDate(){
+  const today=new Date();
+  $("todayDate").textContent=today.toLocaleDateString();
+  $("todayDay").textContent=today.toLocaleDateString(undefined,{weekday:"long"});
+}
+
+function saveTables(){
+  tableStates={};
+  document.querySelectorAll(".table").forEach(table=>tableStates[table.dataset.table]={status:table.dataset.status});
+  localStorage.setItem("tableStates",JSON.stringify(tableStates));
+}
+
+function saveSessions(){
+  localStorage.setItem("activeSessions",JSON.stringify(activeSessions));
+  localStorage.setItem("gameCounts",JSON.stringify(gameCounts));
+}
+
+function saveData(){
+  localStorage.setItem("pricePerHour",pricePerHour);
+  localStorage.setItem("pricePerGame",pricePerGame);
+  localStorage.setItem("reservations",JSON.stringify(reservations));
+  localStorage.setItem("tableOrders",JSON.stringify(tableOrders));
+  localStorage.setItem("sessionHistory",JSON.stringify(sessionHistory));
+  localStorage.setItem("sessionsCompleted",sessionsCompleted);
+  localStorage.setItem("gamesPlayedToday",gamesPlayedToday);
+  localStorage.setItem("snacksSoldToday",snacksSoldToday);
+  localStorage.setItem("revenue",todayRevenue);
+  localStorage.setItem("snacks",JSON.stringify(snacks));
+  localStorage.setItem("receipts",JSON.stringify(receipts));
+  localStorage.setItem("discordLink",discordLink);
+  localStorage.setItem("totalTables",String(totalTables));
+  localStorage.setItem("staffAccounts",JSON.stringify(staffAccounts));
+  localStorage.setItem("currentStaffName",currentStaffName);
+  if(lastEndedSession) localStorage.setItem("lastEndedSession",JSON.stringify(lastEndedSession));
+  saveTables();
+  updateStaffBadge();
+  updateDashboard();
+  updateSummaryStrip();
+}
+
+
+/* Recent sessions */
+function renderRecentSessions(){
+  const list=$("recentSessionsList");
+  if(!list) return;
+  const recent=sessionHistory.slice(-6).reverse();
+  if(!recent.length){ list.innerHTML='<div class="emptySessions">No sessions yet</div>'; return; }
+  list.innerHTML=recent.map((s,idx)=>{
+    const i=sessionHistory.length-1-idx;
+    const type=String(s.type||"").toLowerCase();
+    const cardClass=type.includes("game") ? "sessionGames" : type.includes("time") ? "sessionTimed" : type.includes("reserv") ? "sessionReserved" : "sessionDefault";
+    const label=type.includes("game") ? "Game" : type.includes("time") ? "Time" : s.type || "Session";
+    return `<button class="sessionItem ${cardClass}" onclick="openRecentSession(${i})"><div class="sessionTop"><b>${s.table}</b><span>${label} · ${s.total} IQD</span></div><div class="sessionMeta">${s.date}</div><div class="sessionMeta">${s.duration?`⏱ ${s.duration} min`:`🎮 ${s.games||0} games`}</div></button>`;
+  }).join("");
+}
+
+
+function sessionDetailsHTML(s){
+  return buildReceiptCard({
+    table:s.table,
+    date:s.date,
+    timestamp:s.timestamp,
+    type:s.type,
+    duration:s.duration,
+    games:s.games,
+    snacks:s.snacks,
+    snackItems:s.snackItems||[],
+    total:s.total,
+    receiptId:s.receiptId,
+    staff:s.staff,
+    paymentMethod:s.paymentMethod
+  },{history:true});
+}
+
+function openRecentSession(index){
+  const s=sessionHistory[index];
+  if(!s) return;
+  $("modalTitle").textContent="History";
+  $("modalSubtitle").textContent=(s.table||"Table")+" · "+(s.type||"Session");
+  $("modalBody").innerHTML=sessionDetailsHTML(s);
+  $("modal").style.display="flex";
+}
+
+/* legacy history renderer removed in favor of searchable history */
+
+function showDailyReport(){
+  $("modalTitle").textContent="📊 Daily Report";
+  $("modalSubtitle").textContent="Today's totals";
+  $("modalBody").innerHTML=`<div class="historyItem">💰 Revenue: ${todayRevenue} IQD</div><div class="historyItem">🎱 Sessions Completed: ${sessionsCompleted}</div><div class="historyItem">🎮 Games Played: ${gamesPlayedToday}</div><div class="historyItem">🥤 Snacks Sold: ${snacksSoldToday}</div><div class="historyItem">🧾 Receipts: ${receipts.length}</div><button class="modalCloseAction" onclick="adminMenu()">⬅ Back</button>`;
+}
+
+/* Modal & table interaction */
+function openModal(title,body){$("modalTitle").innerHTML=title;$("modalBody").innerHTML=body;$("modal").style.display="flex";}
+function closeModal(){$("modal").style.display="none";}
+function openMenu(){$("modalTitle").textContent="Table Actions";$("modalBody").innerHTML=`<button onclick="startTimed()">⏱ Timed Session</button><button onclick="startGames()">🎱 Games</button><button id="reserveButton" onclick="reserveTable()">🔵 Reserve</button><button id="maintenanceButton" onclick="maintenanceTable()">⚫ Maintenance</button><button id="snackButton" onclick="showSnacks()">🥤 Add Snack</button><button id="transferButton" onclick="transferTablePrompt()">↔ Transfer Table</button><button id="mergeButton" onclick="mergeTablePrompt()">🔗 Merge Table</button><button id="endButton" onclick="confirmEndSession()">🛑 End Session</button><button id="addGameButton" onclick="addGame()">➕ Add Game</button><button id="removeGameButton" onclick="removeGame()">➖ Remove Game</button><button class="modalCloseAction" onclick="closeModal()">Close</button>`;}
+
+function toggleTable(table){
+  playUiSound("click");
+  selectedTable=table;
+  const status=table.dataset.status;
+  openMenu();
+  $("modal").style.display="flex";
+  $("maintenanceButton").style.display=status==="Available"?"inline-block":"none";
+  $("reserveButton").style.display=status==="Available"?"inline-block":"none";
+  $("snackButton").style.display=["Occupied","Playing"].includes(status)?"inline-block":"none";
+  $("transferButton").style.display=["Occupied","Playing"].includes(status)?"inline-block":"none";
+  $("mergeButton").style.display=["Occupied","Playing"].includes(status)?"inline-block":"none";
+  $("endButton").style.display=status==="Available"?"none":"inline-block";
+  $("addGameButton").style.display=status==="Playing"?"inline-block":"none";
+  $("removeGameButton").style.display=status==="Playing"?"inline-block":"none";
+  document.querySelector('button[onclick="startTimed()"]').style.display=status==="Available"?"inline-block":"none";
+  document.querySelector('button[onclick="startGames()"]').style.display=status==="Available"?"inline-block":"none";
+  if(status==="Available"){
+    $("modalTitle").textContent="Start Session";
+    return;
+  }
+  if(status==="Reserved"){
+    const t=table.dataset.table, r=reservations[t]||{};
+    $("modalTitle").textContent="🔵 Reserved Table";
+    $("modalBody").innerHTML=`<div class="modalSection">Customer:<br>${r.customer||""}<br><br>Time:<br>${r.time||""}<br><br><button onclick="startReservedSession()">▶ Start Session</button><br><br><button onclick="cancelReservation()">❌ Cancel Reservation</button><br><br><button onclick="closeModal()">Close</button>`;
+    $("snackButton").style.display="none";
+    $("endButton").style.display="none";
+    $("transferButton").style.display="none";
+    $("mergeButton").style.display="none";
+    return;
+  }
+  $("modalTitle").textContent="Table In Use";
+  $("modalBody").insertAdjacentHTML("beforeend","");
+}
+
+
+
+/* Session flow */
+function runTimer(currentTable,tableNumber){
+  clearInterval(timers[tableNumber]);
+  timers[tableNumber]=setInterval(()=>{
+    if(!startTimes[tableNumber]){ clearInterval(timers[tableNumber]); return; }
+    const diff=Math.floor((Date.now()-startTimes[tableNumber].getTime())/1000),m=Math.floor(diff/60),s=String(diff%60).padStart(2,"0"),snacksCount=getTableSnackCount(tableNumber);
+    renderTable(currentTable,{tableNumber,status:"Occupied",details:[`⏱ Time: ${m}:${s}`,snacksCount?`🥤 Snacks: ${snacksCount}`:""]});
+  },1000);
+}
+
+function startTimed(){
+  const table=selectedTable,tableNumber=table.dataset.table;
+  playUiSound("success");
+  startTimes[tableNumber]=new Date();
+  activeSessions[tableNumber]={type:"timed",start:startTimes[tableNumber].getTime()};
+  setTableView(table,"Occupied","Occupied",["⏱ Time: 0:00"]);
+  saveSessions(); saveData(); closeModal(); runTimer(table,tableNumber);
+}
+
+function startGames(){
+  const table=selectedTable,tableNumber=table.dataset.table;
+  playUiSound("success");
+  gameCounts[tableNumber]=0;
+  activeSessions[tableNumber]={type:"games",startTime:Date.now()};
+  setTableView(table,"Playing","🎮 Games: 0");
+  saveSessions(); saveData(); closeModal();
+}
+
+
+/* Reservation flow */
+function reserveTable(){
+  $("modalTitle").textContent="🔵 Reserve "+selectedTable.dataset.table;
+  $("modalSubtitle").textContent="Enter guest name and reservation time";
+  $("modalBody").innerHTML=`<div class="modalSection">Customer Name</div><input id="customerName" type="text" placeholder="Customer name"><div class="modalSection">Time</div><input id="reservationTime" type="time"><button onclick="confirmReservation()">Confirm Reservation</button><button class="modalCloseAction" onclick="closeModal()">Cancel</button>`;
+}
+function confirmReservation(){
+  const table=selectedTable,tableNumber=table.dataset.table,name=$("customerName").value,time=$("reservationTime").value;
+  playUiSound("success");
+  reservations[tableNumber]={customer:name,time};
+  setTableView(table,"Reserved","🔵 Reserved",[name,time]);
+  saveData(); closeModal();
+}
+
+function startReservedSession(){
+  const table=selectedTable,tableNumber=table.dataset.table;
+  playUiSound("success");
+  delete reservations[tableNumber];
+  startTimes[tableNumber]=new Date();
+  activeSessions[tableNumber]={type:"timed",start:startTimes[tableNumber].getTime()};
+  setTableView(table,"Occupied","Occupied",["⏱ Time: 0:00"]);
+  saveSessions(); saveData(); runTimer(table,tableNumber); closeModal();
+}
+
+function cancelReservation(){
+  const table=selectedTable,tableNumber=table.dataset.table;
+  playUiSound("warn");
+  delete reservations[tableNumber];
+  setTableView(table,"Available","Available");
+  saveData(); closeModal();
+}
+
+
+/* Table state changes */
+function maintenanceTable(){
+  playUiSound("warn");
+  setTableView(selectedTable,"Maintenance","⚫ Maintenance");
+  saveData(); closeModal();
+}
+
+function addGame(){
+  const tableNumber=selectedTable.dataset.table;
+  playUiSound("click");
+  gameCounts[tableNumber]=(gameCounts[tableNumber]||0)+1;
+  updateTableInfo(tableNumber); saveData();
+}
+
+function removeGame(){
+  const tableNumber=selectedTable.dataset.table;
+  playUiSound("click");
+  if((gameCounts[tableNumber]||0)>0) gameCounts[tableNumber]--;
+  updateTableInfo(tableNumber); saveData();
+}
+
+
+/* Snack system */
+function showSnacks(){
+  const tableNumber=selectedTable.dataset.table,order=tableOrders[tableNumber]||{};
+  let html=`<div class="modalSection">Current Order</div>`;
+  const items=Object.keys(order);
+  if(!items.length) html+=`<div class="historyItem">No snacks added yet</div>`;
+  else items.forEach(item=>{
+    const qty=order[item];
+    html+=`<div class="historyItem"><b>${item}</b><br>Qty: ${qty}<div style="display:flex;gap:10px;margin-top:12px;"><button onclick="removeSnack('${item}')">➖ Remove</button><button onclick="addSnack('${item}')">➕ Add</button></div></div>`;
+  });
+  html+=`<div class="historyItem"><b>Total: ${getTableSnackTotal(tableNumber)} IQD</b></div><div class="modalSection">Add Items</div>`;
+  for(let item in snacks) html+=`<button onclick="addSnack('${item}')">${item} - ${snacks[item]} IQD</button>`;
+  html+=`<button class="modalCloseAction" onclick="toggleTable(selectedTable)">⬅ Back</button>`;
+  $("modalSubtitle").textContent=tableNumber;
+  $("modalBody").innerHTML=html;
+}
+function addSnack(item){
+  const tableNumber=selectedTable.dataset.table;
+  playUiSound("click");
+  tableOrders[tableNumber]||(tableOrders[tableNumber]={});
+  tableOrders[tableNumber][item]=(tableOrders[tableNumber][item]||0)+1;
+  updateTableInfo(tableNumber); saveData(); showSnacks();
+}
+
+function removeSnack(item){
+  const tableNumber=selectedTable.dataset.table;
+  playUiSound("click");
+  if(tableOrders[tableNumber]&&tableOrders[tableNumber][item]){
+    tableOrders[tableNumber][item]--;
+    if(tableOrders[tableNumber][item]<=0) delete tableOrders[tableNumber][item];
+  }
+  updateTableInfo(tableNumber); saveData(); showSnacks();
+}
+
+
+
+/* Checkout / receipts */
+function endSession(){
+  const tableNumber=selectedTable.dataset.table;
+  playUiSound("success");
+  clearInterval(timers[tableNumber]);
+  const isPlaying=selectedTable.dataset.status==="Playing";
+  const snackOrder=tableOrders[tableNumber]||{};
+  const snackInfo=getSnackReceipt(tableNumber),snackCost=snackInfo.total;
+  const snackSoldCount=Object.values(snackOrder).reduce((a,b)=>a+b,0);
+  const originalStart=startTimes[tableNumber]?startTimes[tableNumber].getTime():null;
+  const receiptId=`RB-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;
+  const snackItems=Object.entries(snackOrder).map(([item,qty])=>({item,qty,subtotal:(snacks[item]||0)*qty}));
+  const snapshot={
+    tableNumber,
+    isPlaying,
+    tableStatus:selectedTable.dataset.status,
+    startTime:originalStart,
+    gameStartTime:activeSessions[tableNumber]?.startTime||null,
+    games:(gameCounts[tableNumber]||0),
+    tableOrder:JSON.parse(JSON.stringify(snackOrder)),
+    snackCost,
+    snackSoldCount,
+    receiptId,
+    staff:currentStaffName,
+    paymentMethod:"Cash",
+    date:new Date().toLocaleString()
+  };
+
+  let cost=0;
+  let entry={
+    table:tableNumber,
+    date:new Date().toLocaleString(),
+    timestamp:Date.now(),
+    games:0,
+    snacks:snackInfo.text||"None",
+    snackItems,
+    total:0,
+    duration:0,
+    type:isPlaying?"Game":"Time",
+    receiptId,
+    staff:currentStaffName,
+    paymentMethod:"Cash"
+  };
+
+  if(isPlaying){
+    const games=gameCounts[tableNumber]||0;
+    cost=games*pricePerGame+snackCost;
+    gamesPlayedToday+=games;
+    snacksSoldToday+=snackSoldCount;
+    entry.games=games;
+    entry.total=cost;
+  }else{
+    const startMs=startTimes[tableNumber]?.getTime() || Date.now();
+    const minutes=Math.max(0,Math.floor((Date.now()-startMs) / 60000));
+    const timeCost=Math.ceil((minutes/60)*pricePerHour);
+    cost=(Number.isFinite(timeCost)?timeCost:0)+snackCost;
+    snacksSoldToday+=snackSoldCount;
+    entry.duration=minutes;
+    entry.total=cost;
+  }
+
+  todayRevenue+=cost;
+  sessionsCompleted++;
+  sessionHistory.push(entry);
+  receipts.push({...entry});
+  lastEndedSession={...snapshot, revenueDelta:cost, sessionEntry:entry, timestamp:Date.now()};
+  storeUndoState(lastEndedSession);
+
+  delete gameCounts[tableNumber];
+  delete tableOrders[tableNumber];
+  delete startTimes[tableNumber];
+  delete activeSessions[tableNumber];
+  delete timers[tableNumber];
+  setTableView(selectedTable,"Available","Available");
+  $("modalTitle").textContent="🎱 Royal Billiards";
+  $("modalSubtitle").textContent="Receipt generated";
+  $("modalBody").innerHTML=buildReceiptCard(entry,{history:false});
+  saveSessions();
+  saveData();
+  renderRecentSessions();
+  updateRevenue();
+  updateDashboard();
+}
+
+
+
+/* Undo */
+function undoLastEnd(){
+  if(!isUndoAvailable()){
+    playUiSound("warn");
+    alert("Undo is no longer available.");
+    return;
+  }
+  const snapshot=lastEndedSession;
+  if(!snapshot) return;
+  const tableNumber=snapshot.tableNumber;
+  const table=[...document.querySelectorAll(".table")].find(t=>t.dataset.table===tableNumber);
+  if(!table){
+    alert("Could not restore that table.");
+    return;
+  }
+
+  // reverse totals
+  todayRevenue=Math.max(0,todayRevenue-(snapshot.revenueDelta||0));
+  sessionsCompleted=Math.max(0,sessionsCompleted-1);
+  if(snapshot.isPlaying){
+    gamesPlayedToday=Math.max(0,gamesPlayedToday-(snapshot.games||0));
+  }
+  snacksSoldToday=Math.max(0,snacksSoldToday-(snapshot.snackSoldCount||0));
+
+  // remove latest history entry if it matches this undo
+  const last=sessionHistory[sessionHistory.length-1];
+  if(last && last.table===tableNumber && last.date===snapshot.sessionEntry?.date && last.total===snapshot.sessionEntry?.total){
+    sessionHistory.pop();
+    if(receipts.length) receipts.pop();
+  }
+
+  // restore session state
+  if(snapshot.isPlaying){
+    gameCounts[tableNumber]=snapshot.games||0;
+    tableOrders[tableNumber]=JSON.parse(JSON.stringify(snapshot.tableOrder||{}));
+    activeSessions[tableNumber]={type:"games",startTime:snapshot.gameStartTime||Date.now()};
+    setTableView(table,"Playing","Playing",[`🎮 Games: ${gameCounts[tableNumber]||0}`, getTableSnackCount(tableNumber)?`🥤 Snacks: ${getTableSnackCount(tableNumber)}`:""]);
+  }else{
+    const startTime=snapshot.startTime||Date.now();
+    startTimes[tableNumber]=new Date(startTime);
+    activeSessions[tableNumber]={type:"timed",start:startTime};
+    if(snapshot.tableOrder && Object.keys(snapshot.tableOrder).length){
+      tableOrders[tableNumber]=JSON.parse(JSON.stringify(snapshot.tableOrder));
+    }
+    setTableView(table,"Occupied","Occupied",["⏱ Time: 0:00", getTableSnackCount(tableNumber)?`🥤 Snacks: ${getTableSnackCount(tableNumber)}`:""]);
+    runTimer(table,tableNumber);
+  }
+  lastEndedSession=null;
+  clearUndoState();
+  saveSessions();
+  saveData();
+  renderRecentSessions();
+  updateRevenue();
+  updateDashboard();
+  playUiSound("success");
+  alert("Session restored.");
+}
+function updateTableInfo(tableNumber){
+  const table=[...document.querySelectorAll(".table")].find(t=>t.dataset.table===tableNumber);
+  if(!table) return;
+  const status=table.dataset.status,snacksCount=getTableSnackCount(tableNumber);
+  if(status==="Occupied"){
+    const details=[];
+    if(startTimes[tableNumber]){
+      const diff=Math.floor((Date.now()-startTimes[tableNumber])/1000),m=Math.floor(diff/60),s=String(diff%60).padStart(2,"0");
+      details.push(`⏱ Time: ${m}:${s}`);
+    }
+    if(snacksCount) details.push(`🥤 Snacks: ${snacksCount}`);
+    renderTable(table,{tableNumber,status:"Occupied",details});
+  }else if(status==="Playing"){
+    const details=[`🎮 Games: ${gameCounts[tableNumber]||0}`];
+    if(snacksCount) details.push(`🥤 Snacks: ${snacksCount}`);
+    renderTable(table,{tableNumber,status:"Playing",details});
+  }else if(status==="Reserved"){
+    const r=reservations[tableNumber];
+    renderTable(table,{tableNumber,status:"🔵 Reserved",details:r?[r.customer,r.time]:[]});
+  }else if(status==="Maintenance"){
+    renderTable(table,{tableNumber,status:"⚫ Maintenance"});
+  }else{
+    renderTable(table,{tableNumber,status:"Available"});
+  }
+}
+
+
+/* Data loading */
+function loadData(){
+  pricePerHour=Number(localStorage.getItem("pricePerHour"))||5000;
+  pricePerGame=Number(localStorage.getItem("pricePerGame"))||1000;
+  todayRevenue=Number(localStorage.getItem("revenue"))||0;
+  reservations=JSON.parse(localStorage.getItem("reservations"))||{};
+  tableOrders=JSON.parse(localStorage.getItem("tableOrders"))||{};
+  gameCounts=JSON.parse(localStorage.getItem("gameCounts"))||{};
+  sessionHistory=JSON.parse(localStorage.getItem("sessionHistory"))||[];
+  receipts=JSON.parse(localStorage.getItem("receipts"))||[];
+  sessionsCompleted=Number(localStorage.getItem("sessionsCompleted"))||0;
+  gamesPlayedToday=Number(localStorage.getItem("gamesPlayedToday"))||0;
+  snacksSoldToday=Number(localStorage.getItem("snacksSoldToday"))||0;
+  discordLink=localStorage.getItem("discordLink")||discordLink||"https://discord.com";
+  totalTables=Math.max(1,Number(localStorage.getItem("totalTables"))||totalTables||15);
+  staffAccounts=JSON.parse(localStorage.getItem("staffAccounts"))||staffAccounts||[{name:"Owner",pin:adminPin,role:"Owner"}];
+  currentStaffName=localStorage.getItem("currentStaffName")||currentStaffName||staffAccounts[0]?.name||"Owner";
+  if(!Array.isArray(staffAccounts) || !staffAccounts.length){
+    staffAccounts=[{name:"Owner",pin:adminPin,role:"Owner"}];
+  }
+  if(!staffAccounts.some(acc=>acc.name===currentStaffName)){
+    currentStaffName=staffAccounts[0].name;
+  }
+  tableStates=JSON.parse(localStorage.getItem("tableStates"))||{};
+  renderTables();
+  const savedSessions=JSON.parse(localStorage.getItem("activeSessions"))||{};
+  document.querySelectorAll(".table").forEach(table=>{
+    const t=table.dataset.table;
+    let savedStatus=tableStates[t]?.status||table.dataset.status||"Available";
+    if(["Occupied","Playing"].includes(savedStatus) && !savedSessions[t]){
+      savedStatus="Available";
+    }
+    applyTableStatusClass(table,savedStatus);
+    if(savedStatus==="Reserved") renderTable(table,{tableNumber:t,status:"🔵 Reserved",details:reservations[t]?[reservations[t].customer,reservations[t].time]:[]});
+    else if(savedStatus==="Maintenance") renderTable(table,{tableNumber:t,status:"⚫ Maintenance"});
+    else if(savedStatus==="Occupied") renderTable(table,{tableNumber:t,status:"Occupied",details:["⏱ Time: 0:00"]});
+    else if(savedStatus==="Playing") renderTable(table,{tableNumber:t,status:"Playing",details:[`🎮 Games: ${gameCounts[t]||0}`]});
+    else renderTable(table,{tableNumber:t,status:"Available"});
+  });
+  updateStaffBadge();
+  updateRevenue(); renderRecentSessions(); updateDashboard();
+  if(lastEndedSession && !isUndoAvailable()) clearUndoState();
+}
+
+function loadSessions(){
+  activeSessions=JSON.parse(localStorage.getItem("activeSessions"))||{};
+  document.querySelectorAll(".table").forEach(table=>{
+    const tableNumber=table.dataset.table,session=activeSessions[tableNumber];
+    if(!session) return;
+    if(session.type==="timed"){
+      startTimes[tableNumber]=new Date(session.start);
+      setTableView(table,"Occupied","Occupied",["⏱ Time: 0:00"]);
+      runTimer(table,tableNumber);
+    }else if(session.type==="games"){
+      setTableView(table,"Playing","Playing",[ `🎮 Games: ${gameCounts[tableNumber]||0}`, getTableSnackCount(tableNumber)?`🥤 Snacks: ${getTableSnackCount(tableNumber)}`:"" ]);
+    }
+  });
+}
+
+
+/* Admin panel */
+function openAdmin(){ prompt("Enter Admin PIN")===adminPin ? adminMenu() : alert("❌ Wrong PIN"); }
+
+function adminMenu(){
+  $("modalTitle").textContent="⚙️ Admin Panel";
+  $("modalSubtitle").textContent="Settings, reports, and control center";
+  $("modalBody").innerHTML=`<button onclick="changeHourPrice()">💰 Change Hour Price</button><button onclick="changeGamePrice()">🎮 Change Game Price</button><button onclick="changeAdminPassword()">🔐 Change Admin Password</button><button onclick="showStatistics()">📊 Statistics</button><button onclick="addNewTablePrompt()">➕ Add Table</button><button onclick="removeLastTablePrompt()">➖ Remove Table</button><button onclick="showStaffAccounts()">👥 Staff Accounts</button><button onclick="setDiscordLink()">💬 Discord Link</button><button onclick="manageSnacks()">🥤 Manage Snacks</button><button onclick="showHistory()">📜 Session History</button><button onclick="showDailyReport()">📊 Daily Report</button><button class="modalCloseAction" onclick="closeModal()">Close</button>`;
+  $("modal").style.display="flex";
+}
+
+function confirmEndSession(){ if(confirm("End this session now?")){ playUiSound("warn"); endSession(); } }
+function changeAdminPassword(){ const current=prompt("Enter current admin PIN:"); if(current!==adminPin){ alert("❌ Wrong PIN"); return; } const next=prompt("Enter new admin PIN:"); if(!next||next.length<4){ alert("❌ PIN must be at least 4 digits"); return; } const again=prompt("Confirm new admin PIN:"); if(next!==again){ alert("❌ PINs do not match"); return; } adminPin=String(next); localStorage.setItem("adminPin",adminPin); playUiSound("success"); alert("✅ Admin PIN updated!"); adminMenu(); }
+function changeHourPrice(){ const p=prompt("New price per hour:",pricePerHour); if(p!==null&&p!==""){ pricePerHour=Number(p); playUiSound("success"); saveData(); alert("✅ Hour price updated!"); adminMenu(); } }
+function changeGamePrice(){ const p=prompt("New game price:",pricePerGame); if(p!==null&&p!==""){ pricePerGame=Number(p); playUiSound("success"); saveData(); alert("✅ Game price updated!"); adminMenu(); } }
+function manageSnacks(){
+  let html="<h2>🥤 Snack Manager</h2><br>";
+  for(let item in snacks) html+=`${item} - ${snacks[item]} IQD <button onclick="editSnack('${item}')">✏️</button> <button onclick="deleteSnack('${item}')">❌</button><br><br>`;
+  html+=`<button onclick="addNewSnack()">➕ Add Snack</button><br><br><button onclick="adminMenu()">⬅ Back</button>`;
+  $("modalTitle").textContent="🥤 Snack Manager"; $("modalBody").innerHTML=html;
+}
+function addNewSnack(){ const name=prompt("Snack name:"),price=prompt("Price:"); if(!name||price===null||price==="") return; snacks[name]=Number(price); saveData(); manageSnacks(); }
+function editSnack(item){ const newName=prompt("New snack name:",item),newPrice=prompt("New price:",snacks[item]); if(!newName||newPrice===null||newPrice==="") return; delete snacks[item]; snacks[newName]=Number(newPrice); saveData(); manageSnacks(); }
+function deleteSnack(item){ if(confirm("Delete "+item+"?")){ delete snacks[item]; saveData(); manageSnacks(); } }
+
+
+function openDiscord(){
+  playUiSound("click");
+  window.open(discordLink,"_blank","noopener,noreferrer");
+}
+
+function persistTableCount(){
+  localStorage.setItem("totalTables",String(totalTables));
+}
+
+function addTable(){
+  playUiSound("success");
+  selectedTable=null;
+  closeModal();
+  totalTables+=1;
+  persistTableCount();
+  renderTables();
+  saveData();
+  loadData();
+  loadSessions();
+  updateDashboard();
+  alert(`Table ${totalTables} added.`);
+}
+
+function removeTable(){
+  selectedTable=null;
+  closeModal();
+  const lastNumber=totalTables;
+  if(lastNumber<=1){
+    alert("You need at least one table.");
+    return;
+  }
+  const tableNumber=`Table ${lastNumber}`;
+  const lastTable=getTableByNumber(tableNumber);
+  if(lastTable && lastTable.dataset.status!=="Available"){
+    alert(`Please clear ${tableNumber} before removing it.`);
+    return;
+  }
+  playUiSound("warn");
+  cleanupTableState(tableNumber);
+  delete reservations[tableNumber];
+  delete tableOrders[tableNumber];
+  delete gameCounts[tableNumber];
+  delete startTimes[tableNumber];
+  delete activeSessions[tableNumber];
+  delete timers[tableNumber];
+  totalTables-=1;
+  persistTableCount();
+  renderTables();
+  saveData();
+  loadData();
+  loadSessions();
+  alert(`${tableNumber} removed.`);
+}
+
+function transferTablePrompt(){
+  if(!selectedTable){
+    alert("Select a table first.");
+    return;
+  }
+  const target=prompt("Transfer to which table number?", "");
+  if(target===null || target.trim()==="") return;
+  transferTableTo(normalizeTableInput(target));
+}
+
+function mergeTablePrompt(){
+  if(!selectedTable){
+    alert("Select a table first.");
+    return;
+  }
+  const target=prompt("Merge into which table number?", "");
+  if(target===null || target.trim()==="") return;
+  mergeTableWith(normalizeTableInput(target));
+}
+
+function normalizeTableInput(input){
+  const raw=String(input||"").trim();
+  if(!raw) return "";
+  if(/^table\s+\d+$/i.test(raw)) return raw.replace(/^table/i,"Table");
+  if(/^\d+$/.test(raw)) return `Table ${raw}`;
+  if(/^table\s*\d+$/i.test(raw)) return raw.replace(/^table\s*/i,"Table ");
+  return raw.startsWith("Table ") ? raw : raw;
+}
+
+function combineOrders(targetNumber, sourceNumber){
+  const target=JSON.parse(JSON.stringify(tableOrders[targetNumber]||{}));
+  const source=tableOrders[sourceNumber]||{};
+  Object.entries(source).forEach(([item,qty])=>{
+    target[item]=(target[item]||0)+qty;
+  });
+  if(Object.keys(target).length){
+    tableOrders[targetNumber]=target;
+  }else{
+    delete tableOrders[targetNumber];
+  }
+}
+
+function transferTableTo(targetNumber){
+  const sourceTable=selectedTable;
+  const sourceNumber=sourceTable?.dataset.table;
+  const targetTable=getTableByNumber(targetNumber);
+  if(!sourceTable || !sourceNumber){
+    alert("No source table selected.");
+    return;
+  }
+  if(!targetTable){
+    alert("Target table does not exist.");
+    return;
+  }
+  if(targetTable.dataset.table===sourceNumber){
+    alert("Choose a different table.");
+    return;
+  }
+  if(targetTable.dataset.status!=="Available"){
+    alert("Target table must be available.");
+    return;
+  }
+  const sourceStatus=sourceTable.dataset.status;
+  if(!["Occupied","Playing"].includes(sourceStatus)){
+    alert("Only active tables can be transferred.");
+    return;
+  }
+  const sourceType=activeSessions[sourceNumber]?.type || (sourceStatus==="Playing" ? "games" : "timed");
+  const sourceOrder=JSON.parse(JSON.stringify(tableOrders[sourceNumber]||{}));
+  const sourceGames=gameCounts[sourceNumber]||0;
+  const sourceStart=startTimes[sourceNumber] ? startTimes[sourceNumber].getTime() : (activeSessions[sourceNumber]?.start || activeSessions[sourceNumber]?.startTime || Date.now());
+  clearInterval(timers[sourceNumber]);
+  delete timers[sourceNumber];
+
+  delete reservations[sourceNumber];
+  delete tableOrders[sourceNumber];
+  delete gameCounts[sourceNumber];
+  delete startTimes[sourceNumber];
+  delete activeSessions[sourceNumber];
+
+  if(sourceType==="games"){
+    gameCounts[targetNumber]=sourceGames;
+    activeSessions[targetNumber]={type:"games",startTime:Date.now()};
+    if(Object.keys(sourceOrder).length) tableOrders[targetNumber]=sourceOrder;
+    setTableView(targetTable,"Playing","Playing",[ `🎮 Games: ${gameCounts[targetNumber]||0}`, getTableSnackCount(targetNumber)?`🥤 Snacks: ${getTableSnackCount(targetNumber)}`:"" ]);
+  }else{
+    startTimes[targetNumber]=new Date(sourceStart);
+    activeSessions[targetNumber]={type:"timed",start:sourceStart};
+    if(Object.keys(sourceOrder).length) tableOrders[targetNumber]=sourceOrder;
+    setTableView(targetTable,"Occupied","Occupied",["⏱ Time: 0:00", getTableSnackCount(targetNumber)?`🥤 Snacks: ${getTableSnackCount(targetNumber)}`:""]);
+    runTimer(targetTable,targetNumber);
+  }
+
+  setTableView(sourceTable,"Available","Available");
+  saveSessions();
+  saveData();
+  closeModal();
+  selectedTable=targetTable;
+  alert(`Moved session from ${sourceNumber} to ${targetNumber}.`);
+}
+
+function mergeTableWith(targetNumber){
+  const sourceTable=selectedTable;
+  const sourceNumber=sourceTable?.dataset.table;
+  const targetTable=getTableByNumber(targetNumber);
+  if(!sourceTable || !sourceNumber){
+    alert("No source table selected.");
+    return;
+  }
+  if(!targetTable){
+    alert("Target table does not exist.");
+    return;
+  }
+  if(targetTable.dataset.table===sourceNumber){
+    alert("Choose a different table.");
+    return;
+  }
+
+  const sourceStatus=sourceTable.dataset.status;
+  const targetStatus=targetTable.dataset.status;
+  if(!["Occupied","Playing"].includes(sourceStatus)){
+    alert("Only active tables can be merged.");
+    return;
+  }
+
+  if(targetStatus==="Available"){
+    transferTableTo(targetNumber);
+    return;
+  }
+
+  if(sourceStatus!==targetStatus){
+    alert("Tables must be using the same session type to merge.");
+    return;
+  }
+
+  if(sourceStatus==="Playing"){
+    const targetGames=gameCounts[targetNumber]||0;
+    const sourceGames=gameCounts[sourceNumber]||0;
+    gameCounts[targetNumber]=targetGames+sourceGames;
+    combineOrders(targetNumber,sourceNumber);
+    const targetStart=activeSessions[targetNumber]?.startTime||Date.now();
+    activeSessions[targetNumber]={type:"games",startTime:targetStart};
+    clearInterval(timers[sourceNumber]);
+    delete timers[sourceNumber];
+    delete gameCounts[sourceNumber];
+    delete activeSessions[sourceNumber];
+    delete tableOrders[sourceNumber];
+    setTableView(targetTable,"Playing","Playing",[ `🎮 Games: ${gameCounts[targetNumber]||0}`, getTableSnackCount(targetNumber)?`🥤 Snacks: ${getTableSnackCount(targetNumber)}`:"" ]);
+    setTableView(sourceTable,"Available","Available");
+  }else{
+    const targetStart=startTimes[targetNumber] ? startTimes[targetNumber].getTime() : Date.now();
+    const sourceStart=startTimes[sourceNumber] ? startTimes[sourceNumber].getTime() : Date.now();
+    startTimes[targetNumber]=new Date(Math.min(targetStart,sourceStart));
+    activeSessions[targetNumber]={type:"timed",start:startTimes[targetNumber].getTime()};
+    combineOrders(targetNumber,sourceNumber);
+    clearInterval(timers[sourceNumber]);
+    clearInterval(timers[targetNumber]);
+    delete timers[sourceNumber];
+    delete startTimes[sourceNumber];
+    delete activeSessions[sourceNumber];
+    delete tableOrders[sourceNumber];
+    setTableView(targetTable,"Occupied","Occupied",["⏱ Time: 0:00", getTableSnackCount(targetNumber)?`🥤 Snacks: ${getTableSnackCount(targetNumber)}`:""]);
+    runTimer(targetTable,targetNumber);
+    setTableView(sourceTable,"Available","Available");
+  }
+
+  saveSessions();
+  saveData();
+  closeModal();
+  selectedTable=targetTable;
+  alert(`Merged ${sourceNumber} into ${targetNumber}.`);
+}
+
+function getSessionTimestamp(entry){
+  const parsed=entry?.timestamp ? Number(entry.timestamp) : Date.parse(entry?.date||"");
+  return Number.isFinite(parsed) ? parsed : Date.now();
+}
+
+function getPeakHours(){
+  const counts={};
+  sessionHistory.forEach(entry=>{
+    const d=new Date(getSessionTimestamp(entry));
+    if(Number.isNaN(d.getTime())) return;
+    const hour=d.getHours();
+    counts[hour]=(counts[hour]||0)+1;
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([hour,count])=>({hour:Number(hour),count}));
+}
+
+function getMostUsedTables(){
+  const counts={};
+  sessionHistory.forEach(entry=>{
+    if(!entry?.table) return;
+    counts[entry.table]=(counts[entry.table]||0)+1;
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5).map(([table,count])=>({table,count}));
+}
+
+function getAverageDuration(){
+  const durations=sessionHistory.map(s=>Number(s.duration)||0).filter(v=>v>0);
+  if(!durations.length) return 0;
+  return Math.round(durations.reduce((a,b)=>a+b,0)/durations.length);
+}
+
+function getTotalRevenueFromHistory(){
+  return sessionHistory.reduce((sum,entry)=>sum+(Number(entry.total)||0),0);
+}
+
+function buildSnackLines(snackItems=[]){
+  if(!snackItems.length) return `<div class="receiptRow"><span>Snacks</span><b>None</b></div>`;
+  return snackItems.map(item=>`<div class="receiptRow"><span>${item.item} ×${item.qty}</span><b>${formatIQD(item.subtotal)}</b></div>`).join("");
+}
+
+function buildReceiptCard(entry, options={}){
+  const history=!!options.history;
+  const receiptId=entry.receiptId||`RB-${String(entry.timestamp||Date.now()).slice(-6)}`;
+  const staff=entry.staff||getCurrentStaff()?.name||"Owner";
+  const payment=entry.paymentMethod||"Cash";
+  const typeLabel=String(entry.type||"Session");
+  const ts=entry.timestamp ? new Date(entry.timestamp).toLocaleString() : (entry.date||new Date().toLocaleString());
+  const snackLines=buildSnackLines(entry.snackItems||[]);
+  const sessionLines=entry.type==="Game"
+    ? `<div class="receiptRow"><span>Games Played</span><b>${entry.games||0}</b></div><div class="receiptRow"><span>Games Cost</span><b>${formatIQD((entry.games||0)*pricePerGame)}</b></div>`
+    : `<div class="receiptRow"><span>Duration</span><b>${entry.duration||0} min</b></div><div class="receiptRow"><span>Time Cost</span><b>${formatIQD(Math.ceil(((entry.duration||0)/60)*pricePerHour))}</b></div>`;
+  return `<div class="receiptCard" id="receiptCard">
+    <div class="receiptHeader">
+      <div>
+        <h3>🎱 Royal Billiards</h3>
+        <small>Professional Receipt</small>
+      </div>
+      <div style="text-align:right">
+        <div><b>${receiptId}</b></div>
+        <small>${ts}</small>
+      </div>
+    </div>
+
+    <div class="receiptSection">
+      <div class="receiptRow"><span>Table</span><b>${entry.table||"—"}</b></div>
+      <div class="receiptRow"><span>Staff</span><b>${staff}</b></div>
+      <div class="receiptRow"><span>Session Type</span><b>${typeLabel}</b></div>
+      <div class="receiptRow"><span>Payment</span><b>${payment}</b></div>
+    </div>
+
+    <div class="receiptSection">
+      ${sessionLines}
+    </div>
+
+    <div class="receiptSection">
+      ${snackLines}
+    </div>
+
+    <div class="receiptTotal">
+      <span>Total</span>
+      <span>${formatIQD(entry.total||0)}</span>
+    </div>
+
+    <div class="receiptActions">
+      <button onclick="window.print()">🖨 Print</button>
+      ${history ? '<button class="modalCloseAction" onclick="closeModal()">Close</button>' : '<button onclick="undoLastEnd()">↩ Undo</button><button class="modalCloseAction" onclick="closeModal()">Close</button>'}
+    </div>
+  </div>`;
+}
+
+
+/* Reports & analytics */
+function showStatistics(){
+  const peakHours=getPeakHours();
+  const topTables=getMostUsedTables();
+  const avgDuration=getAverageDuration();
+  const totalHistoryRevenue=getTotalRevenueFromHistory();
+  $("modalTitle").textContent="📊 Statistics";
+  $("modalSubtitle").textContent="Peak hours, table usage, and revenue breakdown";
+  $("modalBody").innerHTML=`
+    <div class="analyticsGrid">
+      <div class="analyticsCard"><small>Total Revenue</small><b>${formatIQD(todayRevenue)}</b><small>Tracked today</small></div>
+      <div class="analyticsCard"><small>Sessions</small><b>${sessionsCompleted}</b><small>Completed today</small></div>
+      <div class="analyticsCard"><small>Average Duration</small><b>${avgDuration} min</b><small>Timed sessions only</small></div>
+      <div class="analyticsCard"><small>Peak Hour</small><b>${peakHours[0] ? `${String(peakHours[0].hour).padStart(2,"0")}:00` : "N/A"}</b><small>${peakHours[0] ? `${peakHours[0].count} sessions` : "No history yet"}</small></div>
+    </div>
+    <div class="historyItem"><b>Top Tables</b><br>${topTables.length ? topTables.map(item=>`${item.table} — ${item.count} sessions`).join("<br>") : "No sessions yet"}</div>
+    <div class="historyItem"><b>Peak Hours</b><br>${peakHours.length ? peakHours.map(item=>`${String(item.hour).padStart(2,"0")}:00 — ${item.count} sessions`).join("<br>") : "No sessions yet"}</div>
+    <div class="historyItem"><b>History Revenue Total</b><br>${formatIQD(totalHistoryRevenue)}</div>
+    <button class="modalCloseAction" onclick="adminMenu()">⬅ Back</button>
+  `;
+  $("modal").style.display="flex";
+}
+
+
+/* Staff management */
+function showStaffAccounts(){
+  const current=getCurrentStaff();
+  $("modalTitle").textContent="👥 Staff Accounts";
+  $("modalSubtitle").textContent=`Current staff: ${current?.name||"Owner"} · ${current?.role||"Staff"}`;
+  $("modalBody").innerHTML=`
+    <div class="staffList">
+      ${staffAccounts.map((acc,index)=>`<div class="staffItem"><b>${acc.name}</b><div class="receiptMeta">Role: ${acc.role||"Staff"}</div><div class="receiptMeta">PIN: ${"•".repeat(String(acc.pin||"").length || 4)}</div><div class="receiptActions"><button onclick="switchStaffAccount(${index})">Use</button><button onclick="editStaffAccount(${index})">Edit</button><button class="modalCloseAction" onclick="deleteStaffAccount(${index})">Delete</button></div></div>`).join("")}
+    </div>
+    <div class="tableManagerNote">Use staff accounts to track who handled each session and printed each receipt.</div>
+    <div class="receiptActions">
+      <button onclick="addStaffAccount()">➕ Add Staff</button>
+      <button onclick="adminMenu()" class="modalCloseAction">⬅ Back</button>
+    </div>
+  `;
+  $("modal").style.display="flex";
+}
+
+function addStaffAccount(){
+  const name=prompt("Staff name:");
+  if(!name) return;
+  const pin=prompt("Staff PIN:");
+  if(pin===null || pin==="") return;
+  const role=prompt("Role (Cashier / Manager / Staff):","Staff") || "Staff";
+  staffAccounts.push({name:String(name).trim(),pin:String(pin),role:String(role).trim()||"Staff"});
+  saveStaffAccounts();
+  saveData();
+  showStaffAccounts();
+}
+
+function editStaffAccount(index){
+  const acc=staffAccounts[index];
+  if(!acc) return;
+  const name=prompt("Staff name:",acc.name);
+  if(!name) return;
+  const pin=prompt("Staff PIN:",acc.pin);
+  if(pin===null || pin==="") return;
+  const role=prompt("Role:",acc.role||"Staff") || "Staff";
+  staffAccounts[index]={name:String(name).trim(),pin:String(pin),role:String(role).trim()||"Staff"};
+  if(currentStaffName===acc.name) currentStaffName=staffAccounts[index].name;
+  saveStaffAccounts();
+  saveData();
+  showStaffAccounts();
+}
+
+function deleteStaffAccount(index){
+  const acc=staffAccounts[index];
+  if(!acc) return;
+  if(!confirm(`Delete ${acc.name}?`)) return;
+  staffAccounts.splice(index,1);
+  if(!staffAccounts.length) staffAccounts=[{name:"Owner",pin:adminPin,role:"Owner"}];
+  if(!staffAccounts.some(item=>item.name===currentStaffName)) currentStaffName=staffAccounts[0].name;
+  saveStaffAccounts();
+  saveData();
+  showStaffAccounts();
+}
+
+function switchStaffAccount(index){
+  const acc=staffAccounts[index];
+  if(!acc) return;
+  const entered=prompt(`Enter PIN for ${acc.name}:`);
+  if(entered===null) return;
+  if(String(entered)!==String(acc.pin)){
+    alert("❌ Wrong PIN");
+    return;
+  }
+  currentStaffName=acc.name;
+  saveStaffAccounts();
+  saveData();
+  updateStaffBadge();
+  showStaffAccounts();
+}
+
+function setDiscordLink(){
+  const link=prompt("Discord server link:",discordLink);
+  if(link===null || link.trim()==="") return;
+  discordLink=link.trim();
+  saveData();
+  alert("✅ Discord link updated.");
+}
+
+function addNewTablePrompt(){
+  addTable();
+}
+
+function removeLastTablePrompt(){
+  removeTable();
+}
+
+function transferCurrentTable(){
+  transferTablePrompt();
+}
+
+function mergeCurrentTable(){
+  mergeTablePrompt();
+}
+
+function renderSessionCard(s,index){
+  const type=String(s.type||"").toLowerCase();
+  const cardClass=type.includes("game") ? "sessionGames" : type.includes("time") ? "sessionTimed" : type.includes("reserv") ? "sessionReserved" : "sessionDefault";
+  const label=type.includes("game") ? "Game" : type.includes("time") ? "Time" : s.type || "Session";
+  const details=String([
+    s.table||"",
+    s.type||"",
+    s.date||"",
+    s.duration!=null ? `${s.duration} minutes` : "",
+    s.games!=null ? `${s.games} games` : "",
+    s.snacks||"",
+    s.total!=null ? `${s.total} IQD` : ""
+  ].join(" ")).toLowerCase();
+  return `<button class="sessionItem ${cardClass}" onclick="openRecentSession(${index})"><div class="sessionTop"><b>${s.table}</b><span>${label} · ${formatIQD(s.total||0)}</span></div><div class="sessionMeta">${s.date||""}</div><div class="sessionMeta">${s.duration!=null?`⏱ ${s.duration} min`:`🎮 ${s.games||0} games`}</div><div class="sessionMeta">${s.staff?`👤 ${s.staff}`:""}${s.receiptId?` · ${s.receiptId}`:""}</div></button>`;
+}
+
+function filterHistory(){
+  historySearchQuery=($("historySearch")?.value||"").trim().toLowerCase();
+  renderHistoryList();
+}
+
+function renderHistoryList(){
+  const host=$("historyResults");
+  if(!host) return;
+  const normalized=historySearchQuery;
+  const indexed=sessionHistory.map((s,i)=>({s,i})).reverse();
+  const filtered=indexed.filter(({s})=>{
+    if(!normalized) return true;
+    const haystack=[s.table,s.type,s.date,String(s.duration||""),String(s.games||""),s.snacks,String(s.total||""),s.staff,s.receiptId].join(" ").toLowerCase();
+    return haystack.includes(normalized);
+  });
+  if(!filtered.length){
+    host.innerHTML='<div class="emptySessions">No sessions match your search</div>';
+    const count=$("historyCount"); if(count) count.textContent=`0 of ${sessionHistory.length} sessions`;
+    return;
+  }
+  host.innerHTML=filtered.map(({s,i})=>renderSessionCard(s,i)).join("");
+  const count=$("historyCount"); if(count) count.textContent=`${filtered.length} of ${sessionHistory.length} sessions`;
+}
+
+function showHistory(){
+  $("modalTitle").textContent="History";
+  $("modalSubtitle").textContent="Browse past sessions and totals";
+  $("modalBody").innerHTML=`<div class="historyToolbar"><input id="historySearch" type="search" placeholder="Search by table, date, type, games, snacks or total" oninput="filterHistory()"><button class="modalCloseAction" onclick="clearHistorySearch()">Clear</button></div><div class="historyCount" id="historyCount"></div><div id="historyResults"></div><button class="modalCloseAction" onclick="adminMenu()">⬅ Back</button>`;
+  $("modal").style.display="flex";
+  renderHistoryList();
+}
+
+function clearHistorySearch(){
+  historySearchQuery="";
+  const input=$("historySearch");
+  if(input) input.value="";
+  renderHistoryList();
+}
+
+function startApp(){ensureDailyReset();loadData();loadSessions();updateStaffBadge();updateDate();updateSummaryStrip();setInterval(updateDashboard,500);setInterval(updateDate,60000);scheduleDailyResetCheck()}
+startApp();
+</script>
+
+</div>
+</body>
+  
+
+</html>
