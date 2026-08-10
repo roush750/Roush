@@ -1,0 +1,5013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#070707" />
+  <title>1911 Café POS</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --bg2:#0a0a0a;
+      --panel:#101010;
+      --panel2:#161311;
+      --line:rgba(255,255,255,.08);
+      --line2:rgba(216,175,84,.18);
+      --text:#f3efe6;
+      --muted:#b9b2a4;
+      --muted2:#8f8777;
+      --gold:#d8af54;
+      --gold2:#f3d48a;
+      --gold3:#8b6a1e;
+      --good:#55c175;
+      --warn:#f1a93b;
+      --bad:#df5b5b;
+      --info:#5d88f0;
+      --radius:24px;
+      --radius2:18px;
+      --shadow:0 16px 42px rgba(0,0,0,.45);
+      --shadow2:0 8px 22px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(216,175,84,.10), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,.04), transparent 28%),
+        linear-gradient(180deg, #040404, #080707 36%, #050505 100%);
+      color:var(--text);
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+      overflow-x:hidden;
+    }
+    button,input,select,textarea{font:inherit}
+    button{
+      border:0;
+      cursor:pointer;
+      color:inherit;
+      background:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    a{color:inherit}
+    .app{
+      max-width:1600px;
+      margin:0 auto;
+      padding:14px;
+      padding-bottom:24px;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:12px 14px;
+      margin-bottom:14px;
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(18,16,14,.95), rgba(8,8,8,.93));
+      box-shadow:var(--shadow2);
+      backdrop-filter:blur(12px);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+    .brandMark{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:900;
+      letter-spacing:.08em;
+      color:#111;
+      background:
+        radial-gradient(circle at 30% 30%, #fff3c9, #f0cf79 38%, #bb8d23 72%, #6f4f08 100%);
+      box-shadow:
+        inset 0 1px rgba(255,255,255,.55),
+        0 0 0 1px rgba(216,175,84,.18),
+        0 14px 26px rgba(0,0,0,.32);
+      flex:0 0 auto;
+    }
+    .brandText{min-width:0}
+    .brandText h1{
+      margin:0;
+      font-size:clamp(20px, 3.1vw, 34px);
+      line-height:1;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .brandText p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.3;
+    }
+    .topActions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .pill{
+      min-height:44px;
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid var(--line2);
+      background:linear-gradient(180deg, rgba(37,31,22,.96), rgba(15,13,10,.96));
+      color:var(--text);
+      box-shadow:inset 0 1px rgba(255,255,255,.03), var(--shadow2);
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .pill.primary{
+      background:linear-gradient(180deg, #e8c35f, #b88421);
+      color:#111;
+      border-color:rgba(255,255,255,.12);
+    }
+    .pill.ghost{
+      background:linear-gradient(180deg, rgba(28,25,19,.98), rgba(12,11,9,.98));
+    }
+    .layout{
+      display:grid;
+      grid-template-columns:minmax(0,1.8fr) minmax(320px,.92fr);
+      gap:14px;
+      align-items:start;
+    }
+    .shiftChip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:42px;
+      padding:0 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(28,24,18,.96), rgba(12,11,9,.98));
+      color:#f4dfb1;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.02em;
+      white-space:nowrap;
+      box-shadow:inset 0 1px rgba(255,255,255,.04);
+    }
+    .mainColumn > section.panel:nth-of-type(3),
+    .mainColumn > section.panel:nth-of-type(4),
+    .sidebar,
+    .stats{
+      display:none !important;
+    }
+    .layout{grid-template-columns:1fr !important;}
+    .mainColumn{width:100%;}
+
+    .mainColumn{display:flex;flex-direction:column;gap:14px;min-width:0}
+    .sidebar{
+      position:sticky;
+      top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      min-width:0;
+    }
+    .panel{
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:linear-gradient(180deg, rgba(18,16,15,.96), rgba(10,10,10,.97));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      min-width:0;
+    }
+    .panelHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:16px 16px 12px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .panelHead h2{
+      margin:0;
+      font-size:clamp(18px, 2.1vw, 24px);
+      line-height:1.15;
+      letter-spacing:-.02em;
+    }
+    .subtle{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:14px;
+    }
+    .statCard{
+      padding:16px;
+      border:1px solid rgba(255,255,255,.06);
+      border-radius:24px;
+      background:linear-gradient(180deg, rgba(20,18,16,.95), rgba(12,10,9,.94));
+      box-shadow:inset 0 1px rgba(255,255,255,.03), var(--shadow2);
+      min-height:122px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      overflow:hidden;
+    }
+    .statCard::before{
+      content:"";
+      height:3px;
+      width:100%;
+      background:linear-gradient(90deg, rgba(216,175,84,.95), rgba(243,212,138,.35));
+      border-radius:999px;
+    }
+    .statLabel{
+      color:var(--muted2);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:10px;
+      font-weight:800;
+    }
+    .statValue{
+      font-size:clamp(22px, 3vw, 34px);
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-.03em;
+    }
+    .statHint{
+      margin-top:auto;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .goldValue{
+      color:#ffe6a7;
+      text-shadow:0 0 18px rgba(216,175,84,.12);
+    }
+    .workspace{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:14px;
+      min-width:0;
+    }
+    .sectionBody{
+      padding:14px 16px 16px;
+    }
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .input, .select, .textarea{
+      width:100%;
+      min-height:46px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(8,8,8,.96);
+      color:var(--text);
+      border-radius:16px;
+      padding:12px 14px;
+      outline:none;
+      box-shadow:inset 0 1px rgba(255,255,255,.03);
+    }
+    .input:focus, .select:focus, .textarea:focus{
+      border-color:rgba(216,175,84,.45);
+      box-shadow:0 0 0 3px rgba(216,175,84,.12);
+    }
+    .textarea{min-height:92px;resize:vertical}
+    .toolbar .input{flex:1 1 240px}
+    .toolbar .select{flex:0 0 auto;min-width:180px}
+    .tabs{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+    .tab{
+      min-height:42px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:700;
+    }
+    .tab.active{
+      background:linear-gradient(180deg, #e8c35f, #b88421);
+      color:#111;
+      border-color:transparent;
+    }
+    .legend{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px 12px;
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:700;
+    }
+    .legend span{
+      display:flex;
+      align-items:center;
+      gap:7px;
+    }
+    .legend span::before{
+      content:"";
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:var(--muted2);
+      box-shadow:0 0 0 3px rgba(255,255,255,.02);
+    }
+    .legend .available::before{background:rgba(72,144,255,.95); box-shadow:0 0 10px rgba(72,144,255,.45)}
+    .legend .occupied::before{background:rgba(255,82,82,.95); box-shadow:0 0 10px rgba(255,82,82,.45)}
+    .legend .awaiting::before{background:var(--info)}
+    .legend .closed::before{background:var(--muted2)}
+    .tablesGrid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+    .tableCard{
+      position:relative;
+      min-height:124px;
+      padding:12px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.07);
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,.04), transparent 30%),
+        linear-gradient(180deg, rgba(22,18,15,.98), rgba(11,10,9,.98));
+      box-shadow:inset 0 1px rgba(255,255,255,.03), var(--shadow2);
+      overflow:hidden;
+      text-align:left;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:8px;
+      transition:transform .16s ease, border-color .16s ease, filter .16s ease, box-shadow .16s ease;
+    }
+    .tableCard:hover{transform:translateY(-1px);filter:brightness(1.03)}
+    .tableCard.available{
+      border-color:rgba(71,136,255,.35);
+      box-shadow:inset 0 1px rgba(255,255,255,.03), 0 0 0 1px rgba(71,136,255,.08), 0 0 28px rgba(61,124,255,.18), var(--shadow2);
+      background:
+        radial-gradient(circle at top, rgba(97,171,255,.20), transparent 35%),
+        linear-gradient(180deg, rgba(12,20,36,.98), rgba(8,12,20,.98));
+    }
+    .tableCard.occupied{
+      border-color:rgba(255,78,78,.35);
+      box-shadow:inset 0 1px rgba(255,255,255,.03), 0 0 0 1px rgba(255,78,78,.08), 0 0 28px rgba(255,70,70,.16), var(--shadow2);
+      background:
+        radial-gradient(circle at top, rgba(255,105,105,.16), transparent 35%),
+        linear-gradient(180deg, rgba(34,9,9,.98), rgba(18,8,8,.98));
+    }
+    .tableCard.awaiting{border-color:rgba(93,136,240,.22)}
+    .tableCard.closed{border-color:rgba(255,255,255,.07)}
+    .tableTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .tableTitle{
+      font-size:17px;
+      font-weight:900;
+      letter-spacing:.01em;
+      margin:0;
+    }
+    .statusBadge{
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      white-space:nowrap;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .statusBadge.available{background:rgba(71,136,255,.18); color:#d7e6ff; border-color:rgba(71,136,255,.26)}
+    .statusBadge.occupied{background:rgba(255,78,78,.18); color:#ffd7d7; border-color:rgba(255,78,78,.26)}
+    .statusBadge.awaiting{background:rgba(93,136,240,.12); color:#cae0ff; border-color:rgba(93,136,240,.22)}
+    .statusBadge.closed{background:rgba(255,255,255,.05); color:#ccc4b8; border-color:rgba(255,255,255,.08)}
+    .tableMeta{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      color:var(--text);
+    }
+    .tableMeta strong{
+      font-size:22px;
+      line-height:1;
+      letter-spacing:-.02em;
+    }
+    .tableMeta small{
+      color:var(--muted);
+      line-height:1.35;
+      font-size:12px;
+    }
+    .tableFooter{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:auto;
+    }
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      min-height:30px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      white-space:nowrap;
+    }
+    .menuGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:12px;
+      margin-top:14px;
+    }
+    .productCard{
+      min-height:240px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.07);
+      background:
+        linear-gradient(180deg, rgba(28,22,18,.95), rgba(12,11,10,.98));
+      box-shadow:inset 0 1px rgba(255,255,255,.03), var(--shadow2);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      text-align:left;
+    }
+    .productImage{
+      height:118px;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(243,212,138,.22), transparent 24%),
+        linear-gradient(135deg, rgba(216,175,84,.25), rgba(216,175,84,.06) 44%, rgba(0,0,0,.15));
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom:1px solid rgba(255,255,255,.05);
+      overflow:hidden;
+    }
+    .productImage img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .productImage .fallback{
+      width:62px;
+      height:62px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      font-weight:900;
+      color:#1a140a;
+      background:linear-gradient(180deg, #f7ddb0, #c99b34);
+      box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 12px 26px rgba(0,0,0,.22);
+    }
+    .productBody{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+      min-width:0;
+    }
+    .productTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .productName{
+      font-size:17px;
+      font-weight:900;
+      margin:0;
+      line-height:1.15;
+    }
+    .productPrice{
+      color:#ffe4a4;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .productDesc{
+      margin:0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+      min-height:34px;
+    }
+    .productFooter{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:auto;
+    }
+    .mini{
+      min-height:40px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:800;
+    }
+    .mini.primary{
+      background:linear-gradient(180deg, #e7c35c, #b88421);
+      color:#111;
+      border-color:transparent;
+    }
+    .mini.ghost{
+      background:rgba(255,255,255,.03);
+    }
+    .mini.danger{
+      background:rgba(223,91,91,.12);
+      color:#ffd1d1;
+      border-color:rgba(223,91,91,.18);
+    }
+    .mini.good{
+      background:rgba(85,193,117,.12);
+      color:#d0ffe0;
+      border-color:rgba(85,193,117,.18);
+    }
+    .sidebarCard{
+      padding:16px;
+    }
+    .orderMeta{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .metaBox{
+      padding:12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+      min-height:72px;
+    }
+    .metaBox span{
+      display:block;
+      color:var(--muted2);
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:10px;
+      font-weight:800;
+      margin-bottom:6px;
+    }
+    .metaBox strong{
+      font-size:15px;
+      line-height:1.25;
+      display:block;
+    }
+    .orderItems{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:14px;
+    }
+    .orderItem{
+      padding:12px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+    }
+    .orderItemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .orderItemTop strong{
+      font-size:14px;
+      line-height:1.3;
+    }
+    .qtyGroup{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+    .qtyChip{
+      min-width:38px;
+      min-height:38px;
+      padding:0 10px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      font-weight:800;
+    }
+    .orderTotals{
+      margin-top:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      border-top:1px solid rgba(255,255,255,.06);
+      padding-top:14px;
+    }
+    .totalRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:14px;
+      color:var(--muted);
+    }
+    .totalRow strong{
+      color:var(--text);
+    }
+    .totalRow.final{
+      font-size:18px;
+      font-weight:900;
+      color:var(--text);
+    }
+    .totalRow.final strong{color:#ffe4a4}
+    .checkoutActions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .checkoutActions .mini{width:100%}
+    .historyTools{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      padding-top:14px;
+    }
+    .historyTools .input{flex:1 1 240px}
+    .historyList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:14px;
+    }
+    .historyItem{
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(17,24,39,.10);
+      background:linear-gradient(180deg, #ffffff, #f7f7f5);
+      color:#111827;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      box-shadow:0 10px 24px rgba(0,0,0,.08);
+    }
+    .historyItemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .historyItemTop strong{
+      font-size:15px;
+      color:#111827;
+    }
+    .historyMeta{
+      color:#4b5563;
+      font-size:12px;
+      line-height:1.45;
+    }
+    .historyRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:3px 0;
+      font-size:13px;
+      color:#111827;
+    }
+    .historyBadges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:4px;
+    }
+    .historyBadge{
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,24,39,.10);
+      background:rgba(17,24,39,.05);
+      color:#111827;
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+    .emptyState{
+      padding:18px;
+      color:var(--muted);
+      text-align:center;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.12);
+      background:rgba(255,255,255,.02);
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:14px;
+      background:rgba(0,0,0,.72);
+      backdrop-filter:blur(10px);
+    }
+    .modal.open{display:flex}
+    .modalCard{
+      width:min(1120px,100%);
+      max-height:min(92vh, 920px);
+      overflow:auto;
+      border-radius:28px;
+      border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(18,16,15,.99), rgba(8,8,8,.99));
+      box-shadow:0 24px 80px rgba(0,0,0,.6);
+    }
+    .modalCard.small{
+      width:min(680px,100%);
+    }
+    .modalHeader{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+      padding:16px 16px 14px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .modalHeader h3{
+      margin:0;
+      font-size:clamp(20px, 2.4vw, 28px);
+      line-height:1.1;
+    }
+    .modalHeader p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .modalClose{
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:900;
+    }
+    .modalBody{padding:16px}
+    .adminLayout{
+      display:grid;
+      grid-template-columns:220px minmax(0,1fr) 360px;
+      gap:14px;
+      min-width:0;
+    }
+    .adminNav{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding:14px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.02);
+      min-width:0;
+    }
+    .adminTab{
+      min-height:44px;
+      padding:10px 12px;
+      border-radius:14px;
+      text-align:left;
+      border:1px solid transparent;
+      background:rgba(255,255,255,.03);
+      font-weight:800;
+    }
+    .adminTab.active{
+      background:linear-gradient(180deg, #e7c35c, #b88421);
+      color:#111;
+    }
+    .adminList,.adminEditor{
+      padding:14px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.02);
+      min-width:0;
+    }
+    .adminList{max-height:min(72vh, 760px);overflow:auto}
+    .adminEditor{position:sticky;top:0;max-height:min(72vh, 760px);overflow:auto;align-self:start}
+    .adminListHead,.adminEditorHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .adminListItems{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .adminListItem{
+      padding:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .adminListItemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      align-items:flex-start;
+    }
+    .adminListItemTop strong{font-size:14px}
+    .adminItemActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .adminForm{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .formRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .formLabel{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      color:var(--muted2);
+      font-weight:800;
+      margin-bottom:6px;
+    }
+    .field{display:flex;flex-direction:column}
+    .checkboxRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .checkboxRow label{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+    }
+    .recipeRows{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .recipeRow{
+      display:grid;
+      grid-template-columns:1.4fr .7fr .7fr auto;
+      gap:8px;
+      align-items:center;
+    }
+    .reportGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:10px;
+      margin-top:10px;
+    }
+    .reportCard{
+      padding:14px;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.03);
+    }
+    .reportCard b{
+      display:block;
+      font-size:18px;
+      margin-top:4px;
+    }
+    .receipt{
+      border-radius:22px;
+      background:linear-gradient(180deg, #f8f4ea, #ede7d9);
+      color:#1a1a1a;
+      padding:18px;
+      border:1px solid rgba(0,0,0,.08);
+    }
+    .receipt h4{
+      margin:0 0 8px;
+      font-size:22px;
+      line-height:1.1;
+    }
+    .receiptMeta{
+      color:#4a463d;
+      font-size:13px;
+      line-height:1.5;
+    }
+    .receiptList{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px dashed rgba(0,0,0,.18);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .receiptRow{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      font-size:14px;
+      line-height:1.35;
+    }
+    .receiptTotals{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid rgba(0,0,0,.12);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:14px;
+    }
+    .receiptTotals .final{
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .checkoutGrid{
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:14px;
+    }
+
+
+    .orderWorkspace{
+      display:grid;
+      grid-template-columns:minmax(0,1.85fr) minmax(320px,1fr);
+      gap:14px;
+      min-width:0;
+      align-items:start;
+    }
+    .orderPane{
+      padding:14px;
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.02);
+      min-width:0;
+    }
+    .orderPane.menu{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .orderPane.cart{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      position:sticky;
+      top:0;
+      max-height:calc(92vh - 120px);
+      overflow:auto;
+    }
+    .orderPaneHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+    }
+    .orderPaneHead h4{
+      margin:0;
+      font-size:16px;
+      line-height:1.2;
+    }
+    .orderPaneHead .subtle{
+      margin-top:4px;
+    }
+    .orderNoteBox{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding-top:2px;
+    }
+    .orderNoteBox .textarea{
+      min-height:76px;
+      resize:vertical;
+    }
+    .orderMenuActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+    }
+    .orderMenuActions .input{
+      flex:1 1 220px;
+    }
+    .orderHint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+    .orderPane .menuGrid{
+      margin-top:0;
+    }
+    .orderPane .checkoutActions{
+      grid-template-columns:1fr 1fr;
+    }
+    @media (max-width: 900px){
+      .orderWorkspace{
+        grid-template-columns:1fr;
+      }
+    }
+    @media (max-width: 640px){
+      .orderPane{
+        padding:12px;
+      }
+      .orderPane.cart{
+        position:static;
+        max-height:none;
+        overflow:visible;
+      }
+      .orderPane .checkoutActions{
+        grid-template-columns:1fr;
+      }
+      .orderPaneHead{
+        flex-direction:column;
+      }
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      z-index:10000;
+      background:rgba(10,10,10,.94);
+      border:1px solid rgba(216,175,84,.22);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:999px;
+      box-shadow:var(--shadow);
+      display:none;
+      max-width:min(92vw,560px);
+      text-align:center;
+      font-weight:700;
+    }
+    .toast.show{display:block;animation:fadeUp .16s ease}
+    @keyframes fadeUp{from{transform:translateX(-50%) translateY(8px);opacity:.3}to{transform:translateX(-50%) translateY(0);opacity:1}}
+
+    @media (max-width: 1200px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{position:static}
+      .workspace{grid-template-columns:1fr}
+      .adminLayout{display:flex;flex-direction:column}
+      .adminNav{order:1}
+      .adminEditor{order:2;position:static;max-height:none}
+      .adminList{order:3;max-height:none}
+    }
+
+    .categoryStrip{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .categoryChip{
+      min-height:40px;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      font-weight:800;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .categoryChip span{
+      min-width:22px;
+      height:22px;
+      display:inline-grid;
+      place-items:center;
+      border-radius:999px;
+      background:rgba(255,255,255,.06);
+      color:var(--muted);
+      font-size:11px;
+      font-weight:900;
+    }
+    .categoryChip.active{
+      background:linear-gradient(180deg, #e8c35f, #b88421);
+      color:#111;
+      border-color:rgba(255,255,255,.12);
+    }
+    .categoryChip.active span{
+      background:rgba(17,17,17,.12);
+      color:#111;
+    }
+
+    @media (max-width: 900px){
+      .stats{grid-template-columns:repeat(2, minmax(0,1fr))}
+      .tablesGrid{grid-template-columns:repeat(3, minmax(0,1fr))}
+      .menuGrid{grid-template-columns:1fr}
+      .checkoutGrid{grid-template-columns:1fr}
+      .reportGrid{grid-template-columns:1fr}
+      .formRow{grid-template-columns:1fr}
+      .recipeRow{grid-template-columns:1fr 1fr}
+      .recipeRow .mini{grid-column:1 / -1}
+    }
+    @media (max-width: 640px){
+      .app{padding:10px}
+      .topbar{padding:12px}
+      .brandMark{width:48px;height:48px}
+      .topActions{width:100%;justify-content:stretch}
+      .pill{flex:1 1 auto;justify-content:center}
+      .stats{grid-template-columns:1fr 1fr}
+      .tablesGrid{grid-template-columns:1fr 1fr}
+      .panelHead{padding:14px}
+      .sectionBody{padding:12px}
+      .modal{padding:10px}
+      .modalCard{border-radius:24px}
+      .adminNav{overflow-x:auto;flex-direction:row}
+      .adminTab{white-space:nowrap}
+    }
+    @media (max-width: 380px){
+      .stats{grid-template-columns:1fr}
+      .tablesGrid{grid-template-columns:1fr}
+      .orderMeta{grid-template-columns:1fr}
+      .checkoutActions{grid-template-columns:1fr}
+      .topActions{gap:8px}
+      .pill{min-height:42px;padding:10px 12px}
+    }
+  
+
+/* 1911 simplified main POS: tables only */
+.mainColumn {
+  width: 100%;
+}
+.layout {
+  grid-template-columns: 1fr;
+}
+.sidebar {
+  display: none !important;
+}
+.mainColumn > .stats,
+.mainColumn > section.panel:nth-of-type(3),
+.mainColumn > section.panel:nth-of-type(4) {
+  display: none !important;
+}
+.topActions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.topActions .pill {
+  min-height: 42px;
+}
+@media (max-width: 760px) {
+  .topbar {
+    gap: 12px;
+  }
+  .topActions {
+    width: 100%;
+  }
+  .topActions .pill {
+    flex: 1 1 auto;
+  }
+}
+
+
+/* Table / takeaway flow modal */
+.flowCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: linear-gradient(180deg, rgba(19,14,8,.98), rgba(8,6,3,.98));
+  border: 1px solid rgba(255,215,128,.14);
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 18px 42px rgba(0,0,0,.35);
+}
+.flowCard .orderItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.flowCard .orderTotals {
+  margin-top: 2px;
+}
+.flowCard .checkoutActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 640px) {
+  .flowCard .checkoutActions {
+    grid-template-columns: 1fr;
+  }
+}
+
+    /* === 1911 UX / responsive overrides === */
+    .tablesGrid{
+      grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+      align-items:stretch;
+    }
+    .tableCard.available{
+      border-color:rgba(72,144,255,.55);
+      box-shadow:
+        inset 0 1px rgba(255,255,255,.03),
+        0 0 0 1px rgba(72,144,255,.12),
+        0 0 26px rgba(72,144,255,.22),
+        var(--shadow2);
+      background:
+        radial-gradient(circle at top, rgba(94,174,255,.26), transparent 34%),
+        linear-gradient(180deg, rgba(12,22,40,.98), rgba(8,12,20,.98));
+    }
+    .tableCard.occupied{
+      border-color:rgba(255,82,82,.58);
+      box-shadow:
+        inset 0 1px rgba(255,255,255,.03),
+        0 0 0 1px rgba(255,82,82,.12),
+        0 0 26px rgba(255,82,82,.22),
+        var(--shadow2);
+      background:
+        radial-gradient(circle at top, rgba(255,98,98,.22), transparent 34%),
+        linear-gradient(180deg, rgba(38,10,10,.98), rgba(18,8,8,.98));
+    }
+    .shiftChip{
+      white-space:normal;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      gap:2px;
+      line-height:1.15;
+    }
+    .shiftChip .shiftLine{
+      display:block;
+    }
+    .shiftChip .shiftLabel{
+      color:#f7e3b8;
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .shiftChip .shiftValue{
+      color:#fff7e7;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    @media (max-width: 900px){
+      .topbar{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:10px;
+        align-items:stretch;
+      }
+      .brand{
+        width:100%;
+      }
+      .brandText h1{
+        font-size:clamp(20px, 7vw, 30px);
+      }
+      .brandText p{
+        font-size:12px;
+      }
+      .shiftChip{
+        width:100%;
+      }
+      .topActions{
+        width:100%;
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:8px;
+        justify-content:stretch;
+      }
+      .topActions .pill{
+        width:100%;
+        justify-content:center;
+        white-space:normal;
+        padding:10px 12px;
+        font-size:13px;
+      }
+      #adminButton{
+        grid-column:1 / -1;
+      }
+      .tablesGrid{
+        grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+      }
+    }
+    @media (max-width: 640px){
+      .app{
+        padding:10px;
+        padding-bottom:18px;
+      }
+      .topbar{
+        padding:12px;
+      }
+      .brandMark{
+        width:46px;
+        height:46px;
+        font-size:11px;
+      }
+      .brandText p{
+        font-size:11px;
+      }
+      .panelHead{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+      .panelHead h2{
+        font-size:clamp(17px, 6vw, 22px);
+      }
+      .sectionBody{
+        padding:12px;
+      }
+      .tablesGrid{
+        grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
+        gap:10px;
+      }
+      .tableCard{
+        min-height:116px;
+        padding:11px;
+      }
+      .tableTitle{
+        font-size:16px;
+      }
+      .topActions{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 420px){
+      .topActions{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+      .topActions .pill{
+        min-height:40px;
+        padding:9px 10px;
+        font-size:12px;
+      }
+      #adminButton{
+        min-height:42px;
+      }
+      .tablesGrid{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+    }
+
+  
+    @media (max-width: 900px){
+      .adminLayout{
+        grid-template-columns:1fr;
+      }
+      .adminNav{
+        display:grid;
+        grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));
+      }
+      .adminEditor{
+        order:1;
+        position:static;
+        max-height:none;
+      }
+      .adminList{
+        order:2;
+        max-height:none;
+      }
+      .adminListHead,
+      .adminEditorHead{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brandMark">1911</div>
+      <div class="brandText">
+        <h1>1911 Café POS</h1>
+        <p>Premium black &amp; gold service for dine-in and takeaway orders</p>
+      </div>
+    </div>
+    <div class="shiftChip" id="shiftChip">SHIFT: 5:00 PM – 2:00 AM · STAFF: —</div>
+      <div class="topActions">
+      <button class="pill ghost" id="staffButton">👤 <span id="staffButtonLabel">Owner</span></button>
+      <button class="pill ghost" id="menuButton" onclick="window.__1911.openMenuHub()">📖 Menu</button>
+      <button class="pill ghost" id="historyButton" onclick="window.__1911.openHistoryHub()">🕒 History</button>
+      <button class="pill ghost" id="takeawayButton">🧾 Takeaway</button>
+      <button class="pill primary" id="adminButton">⚙️ Admin</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <div class="mainColumn">
+      <section class="stats" id="statsRow"></section>
+
+      <section class="panel">
+        <div class="panelHead">
+          <div>
+            <h2>Tables &amp; Orders</h2>
+            <div class="subtle">Tap a table to open its current order or start a new one.</div>
+          </div>
+          <div class="tag" id="tableSummaryTag">0 tables</div>
+        </div>
+        <div class="sectionBody">
+          <div class="legend">
+            <span class="available">Available</span>
+            <span class="occupied">Occupied</span>
+          </div>
+          <div class="tablesGrid" id="tablesGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panelHead">
+          <div>
+            <h2>Menu &amp; Products</h2>
+            <div class="subtle">Browse by category, search products, and add items to the selected order.</div>
+          </div>
+          <div class="tag" id="productCountTag">0 products</div>
+        </div>
+        <div class="sectionBody">
+          <div class="toolbar">
+            <input class="input" id="productSearch" type="search" placeholder="Search products, ingredients, or notes..." />
+            <select class="select" id="availabilityFilter">
+              <option value="all">All items</option>
+              <option value="available">Available only</option>
+              <option value="unavailable">Unavailable</option>
+            </select>
+          </div>
+          <div class="tabs" id="categoryTabs"></div>
+          <div class="menuGrid" id="productsGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panelHead">
+          <div>
+            <h2>Order History</h2>
+            <div class="subtle">Search past receipts, totals, staff, and items.</div>
+          </div>
+          <div class="tag" id="historySummaryTag">0 orders today</div>
+        </div>
+        <div class="sectionBody">
+          <div class="historyTools">
+            <input class="input" id="historySearch" type="search" placeholder="Search by order ID, table, item, staff, or payment..." />
+            <select class="select" id="historyRange">
+              <option value="all">All time</option>
+              <option value="today">Today</option>
+              <option value="week">Last 7 days</option>
+              <option value="month">This month</option>
+            </select>
+          </div>
+          <div class="historyList" id="historyList"></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="sidebar">
+      <section class="panel sidebarCard">
+        <div class="panelHead" style="padding:0 0 12px;border:0">
+          <div>
+            <h2>Current Order</h2>
+            <div class="subtle" id="currentOrderSub">No order selected</div>
+          </div>
+          <div class="tag" id="orderStatusTag">Idle</div>
+        </div>
+        <div class="orderMeta">
+          <div class="metaBox">
+            <span>Table / Mode</span>
+            <strong id="orderModeLabel">—</strong>
+          </div>
+          <div class="metaBox">
+            <span>Order ID</span>
+            <strong id="orderIdLabel">—</strong>
+          </div>
+          <div class="metaBox">
+            <span>Order Type</span>
+            <strong id="orderTypeLabel">—</strong>
+          </div>
+          <div class="metaBox">
+            <span>Items</span>
+            <strong id="orderItemsCountLabel">0</strong>
+          </div>
+        </div>
+
+        <div class="orderItems" id="orderItems"></div>
+
+        <div class="orderTotals" id="orderTotals"></div>
+
+        <div class="checkoutActions">
+          <button class="mini ghost" id="sendOrderButton">📤 Send</button>
+          <button class="mini good" id="discountButton">🏷 Discount</button>
+          <button class="mini primary" id="checkoutButton">💳 Checkout</button>
+          <button class="mini danger" id="closeOrderButton">✕ Close</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panelHead">
+          <div>
+            <h2>Daily Snapshot</h2>
+            <div class="subtle">Live figures from completed orders.</div>
+          </div>
+        </div>
+        <div class="sectionBody">
+          <div class="reportGrid" id="quickReports"></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modalCard" id="modalCard">
+    <div class="modalHeader">
+      <div>
+        <h3 id="modalTitle">Modal</h3>
+        <p id="modalSubtitle">—</p>
+      </div>
+      <button class="modalClose" id="modalCloseButton" onclick="window.__1911.closeModal()">✕</button>
+    </div>
+    <div class="modalBody" id="modalBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const STORE_KEY = '1911CafePOS:v1';
+  const $ = (id) => document.getElementById(id);
+
+  const defaultState = () => ({
+    settings: {
+      brandName: '1911',
+      tableCount: 12,
+      currency: 'IQD',
+      paymentMethods: ['Cash', 'Card', 'Other'],
+      lowStockAlerts: true,
+      shiftLabel: '5:00 PM – 2:00 AM'
+    },
+    categories: [
+      { id: uid('cat'), name: 'Coffee', order: 1, active: true },
+      { id: uid('cat'), name: 'Hot Drinks', order: 2, active: true },
+      { id: uid('cat'), name: 'Cold Drinks', order: 3, active: true },
+      { id: uid('cat'), name: 'Fast Food', order: 4, active: true },
+      { id: uid('cat'), name: 'Desserts', order: 5, active: true },
+      { id: uid('cat'), name: 'Snacks', order: 6, active: true }
+    ],
+    products: [
+      {
+        id: uid('prd'),
+        name: 'Spanish Latte',
+        price: 5500,
+        categoryId: null,
+        image: '',
+        description: 'Creamy espresso with a smooth sweet finish.',
+        available: true,
+        variants: [
+          { name: 'Regular', priceDelta: 0 },
+          { name: 'Large', priceDelta: 1000 }
+        ],
+        recipe: []
+      },
+      {
+        id: uid('prd'),
+        name: 'Iced Americano',
+        price: 3500,
+        categoryId: null,
+        image: '',
+        description: 'Bold espresso, chilled and refreshing.',
+        available: true,
+        variants: [],
+        recipe: []
+      },
+      {
+        id: uid('prd'),
+        name: 'Caramel Cheesecake',
+        price: 4500,
+        categoryId: null,
+        image: '',
+        description: 'Rich cake with a caramel top and soft base.',
+        available: true,
+        variants: [],
+        recipe: []
+      },
+      {
+        id: uid('prd'),
+        name: 'Chicken Burger',
+        price: 6500,
+        categoryId: null,
+        image: '',
+        description: 'Golden chicken burger with crisp lettuce.',
+        available: true,
+        variants: [
+          { name: 'Single', priceDelta: 0 },
+          { name: 'Double', priceDelta: 2200 }
+        ],
+        recipe: []
+      },
+      {
+        id: uid('prd'),
+        name: 'Strawberry Mojito',
+        price: 4000,
+        categoryId: null,
+        image: '',
+        description: 'Fresh strawberry, lime, and mint soda.',
+        available: true,
+        variants: [],
+        recipe: []
+      },
+      {
+        id: uid('prd'),
+        name: 'Classic Fries',
+        price: 2500,
+        categoryId: null,
+        image: '',
+        description: 'Hot, crispy fries served with seasoning.',
+        available: true,
+        variants: [],
+        recipe: []
+      }
+    ],
+    inventory: [
+      { id: uid('inv'), name: 'Coffee Beans', qty: 4.2, unit: 'kg', threshold: 2, cost: 0, supplier: '', active: true },
+      { id: uid('inv'), name: 'Milk', qty: 18, unit: 'L', threshold: 5, cost: 0, supplier: '', active: true }
+    ],
+    tables: Array.from({ length: 12 }, (_, i) => ({
+      id: uid('tbl'),
+      number: i + 1,
+      label: `Table ${String(i + 1).padStart(2, '0')}`,
+      orderId: null,
+      lastClosedAt: null
+    })),
+    orders: [],
+    activeOrders: [],
+    staff: [
+      { id: uid('usr'), name: 'Owner', pin: '1234', role: 'OWNER', active: true },
+      { id: uid('usr'), name: 'Cashier', pin: '1111', role: 'STAFF', active: true }
+    ],
+    currentStaffId: null,
+    activeCategoryId: 'all',
+    currentOrderId: null,
+    searchProducts: '',
+    searchHistory: '',
+    historyRange: 'all',
+    reportMode: 'today',
+    reportDate: new Date().toISOString().slice(0, 10),
+    reportMonth: new Date().toISOString().slice(0, 7),
+    reportWeekStart: '',
+    adminTab: 'products',
+    adminSelection: null,
+    adminProductCategoryId: 'all',
+    adminProductSearch: '',
+    adminCategorySearch: '',
+    checkoutDraft: null,
+    showArchivedClosed: true
+  });
+
+  let state = loadState();
+  migrateAndNormalize();
+  ensureCurrentStaff();
+  bindEvents();
+  renderAll();
+  scheduleRolloverSafeSave();
+
+  function uid(prefix = 'id') {
+    return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return defaultState();
+  }
+
+  function saveState() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  }
+
+  function safeClone(v) {
+    return JSON.parse(JSON.stringify(v));
+  }
+
+  function migrateAndNormalize() {
+    const d = defaultState();
+    state.settings = { ...d.settings, ...(state.settings || {}) };
+    state.categories = normalizeArray(state.categories, d.categories);
+    state.inventory = normalizeArray(state.inventory, d.inventory);
+    state.products = normalizeArray(state.products, d.products);
+    state.tables = normalizeArray(state.tables, []);
+    state.orders = Array.isArray(state.orders) ? state.orders : [];
+    state.activeOrders = Array.isArray(state.activeOrders) ? state.activeOrders : [];
+    state.staff = normalizeArray(state.staff, d.staff);
+    state.currentStaffId = state.currentStaffId || null;
+    state.activeCategoryId = state.activeCategoryId || 'all';
+    state.currentOrderId = state.currentOrderId || null;
+    state.searchProducts = state.searchProducts || '';
+    state.searchHistory = state.searchHistory || '';
+    state.historyRange = state.historyRange || 'all';
+    state.reportMode = state.reportMode || 'today';
+    state.reportDate = state.reportDate || new Date().toISOString().slice(0, 10);
+    state.reportMonth = state.reportMonth || new Date().toISOString().slice(0, 7);
+    state.reportWeekStart = state.reportWeekStart || '';
+    state.adminTab = state.adminTab || 'products';
+    state.adminSelection = state.adminSelection || null;
+    state.adminProductCategoryId = state.adminProductCategoryId || 'all';
+    state.adminProductSearch = state.adminProductSearch || '';
+    state.adminCategorySearch = state.adminCategorySearch || '';
+    state.checkoutDraft = state.checkoutDraft || null;
+    state.showArchivedClosed = state.showArchivedClosed ?? true;
+    state.orderSequence = Number(state.orderSequence || 0);
+    if (!state.orderSequence) {
+      const existingSeq = [...(state.orders || []), ...(state.activeOrders || [])]
+        .map(o => Number(o?.sequenceNo) || getOrderSequenceFromCode(o?.code) || 0)
+        .filter(Boolean);
+      state.orderSequence = existingSeq.length ? Math.max(...existingSeq) + 1 : 1;
+    }
+
+    if (!state.tables.length) {
+      state.tables = Array.from({ length: Number(state.settings.tableCount) || 12 }, (_, i) => ({
+        id: uid('tbl'),
+        number: i + 1,
+        label: `Table ${String(i + 1).padStart(2, '0')}`,
+        orderId: null,
+        lastClosedAt: null
+      }));
+    }
+
+    // assign missing category/product relations
+    const catIds = new Set(state.categories.map(c => c.id));
+    const firstCategory = state.categories[0]?.id || null;
+    state.products = state.products.map((p, idx) => ({
+      id: p.id || uid('prd'),
+      name: String(p.name || `Product ${idx + 1}`),
+      price: Number(p.price || 0),
+      categoryId: catIds.has(p.categoryId) ? p.categoryId : firstCategory,
+      image: p.image || '',
+      description: p.description || '',
+      available: p.available !== false,
+      variants: Array.isArray(p.variants) ? p.variants : [],
+      recipe: Array.isArray(p.recipe) ? p.recipe : []
+    }));
+
+    // attach product categories by id if missing
+    if (!catIds.size && state.products.length) {
+      state.categories = d.categories;
+    }
+
+    // tables count sync
+    const desired = Math.max(1, Number(state.settings.tableCount) || 12);
+    if (state.tables.length < desired) {
+      const start = state.tables.length;
+      for (let i = start; i < desired; i++) {
+        state.tables.push({
+          id: uid('tbl'),
+          number: i + 1,
+          label: `Table ${String(i + 1).padStart(2, '0')}`,
+          orderId: null,
+          lastClosedAt: null
+        });
+      }
+    } else if (state.tables.length > desired) {
+      // preserve order, only trim if extra tables are completely empty
+      while (state.tables.length > desired) {
+        const last = state.tables[state.tables.length - 1];
+        if (last && !last.orderId) state.tables.pop();
+        else break;
+      }
+    }
+
+    // normalize table labels/numbers
+    state.tables.forEach((t, i) => {
+      t.number = i + 1;
+      if (!t.label) t.label = `Table ${String(i + 1).padStart(2, '0')}`;
+      if (typeof t.orderId === 'undefined') t.orderId = null;
+      if (typeof t.lastClosedAt === 'undefined') t.lastClosedAt = null;
+    });
+
+    state.orders = (state.orders || []).map(normalizeOrder).filter(Boolean);
+    state.activeOrders = (state.activeOrders || []).map(normalizeOrder).filter(Boolean);
+
+    // ensure active order references are clean
+    state.activeOrders = state.activeOrders.filter(o => o && o.id && o.status !== 'paid');
+    state.orders = state.orders.filter(o => o && o.id);
+  }
+
+  function normalizeArray(arr, fallback) {
+    if (!Array.isArray(arr) || !arr.length) return safeClone(fallback);
+    return arr;
+  }
+
+  function ensureCurrentStaff() {
+    if (!state.staff.length) {
+      state.staff = defaultState().staff;
+    }
+    if (!state.currentStaffId || !state.staff.some(s => s.id === state.currentStaffId)) {
+      state.currentStaffId = state.staff[0].id;
+    }
+    saveState();
+  }
+
+  function getCurrentStaff() {
+    return state.staff.find(s => s.id === state.currentStaffId) || state.staff[0];
+  }
+
+  function isOwner() {
+    return (getCurrentStaff()?.role || '') === 'OWNER';
+  }
+
+  function formatMoney(value) {
+    return `${Math.max(0, Math.round(Number(value) || 0)).toLocaleString()} ${state.settings.currency}`;
+  }
+
+  function roundNumber(value, decimals = 6) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 0;
+    const p = Math.pow(10, decimals);
+    return Math.round((n + Number.EPSILON) * p) / p;
+  }
+
+  function normalizeUnit(unit) {
+    return String(unit || '').trim().toLowerCase();
+  }
+
+  function getUnitFamily(unit) {
+    const u = normalizeUnit(unit);
+    if (u === 'g' || u === 'kg') return 'mass';
+    if (u === 'ml' || u === 'l') return 'volume';
+    if (u === 'pcs' || u === 'pc' || u === 'ea' || u === 'each' || u === 'unit' || u === 'units' || u === 'item' || u === 'items') return 'count';
+    return u ? 'custom' : null;
+  }
+
+  function getUnitBaseFactor(unit) {
+    const u = normalizeUnit(unit);
+    if (u === 'kg' || u === 'l') return 1000;
+    if (u === 'g' || u === 'ml' || u === 'pcs' || u === 'pc' || u === 'ea' || u === 'each' || u === 'unit' || u === 'units' || u === 'item' || u === 'items') return 1;
+    return 1;
+  }
+
+  function areCompatibleUnits(a, b) {
+    const ua = normalizeUnit(a);
+    const ub = normalizeUnit(b);
+    if (!ua || !ub) return true;
+    if (ua === ub) return true;
+    const fa = getUnitFamily(ua);
+    const fb = getUnitFamily(ub);
+    if (!fa || !fb) return false;
+    return fa === fb && fa !== 'custom';
+  }
+
+  function convertQuantity(value, fromUnit, toUnit) {
+    const amount = Number(value) || 0;
+    const from = normalizeUnit(fromUnit);
+    const to = normalizeUnit(toUnit);
+    if (!from && !to) return { value: amount, compatible: true };
+    if (from === to) return { value: amount, compatible: true };
+    if (!areCompatibleUnits(from, to)) return { value: amount, compatible: false };
+    const base = amount * getUnitBaseFactor(from);
+    const converted = base / getUnitBaseFactor(to);
+    return { value: roundNumber(converted, 6), compatible: true };
+  }
+
+  function formatInventoryQty(value, unit) {
+    const qty = roundNumber(Number(value) || 0, 6);
+    const u = normalizeUnit(unit);
+    if (Math.abs(qty - Math.round(qty)) < 1e-9) return String(Math.round(qty));
+    if (u === 'kg' || u === 'l') return qty.toFixed(3);
+    return qty.toFixed(3).replace(/\.?0+$/, '');
+  }
+
+  function formatDateTime(ts) {
+    const d = new Date(ts);
+    return d.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function formatShortDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit'
+    });
+  }
+
+  function startOfDay(date = new Date()) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  }
+
+  function startOfWeek(date = new Date()) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = (day + 6) % 7;
+    d.setDate(d.getDate() - diff);
+    d.setHours(0,0,0,0);
+    return d.getTime();
+  }
+
+  function startOfMonth(date = new Date()) {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getTime();
+  }
+
+  function getCategoryName(id) {
+    if (id === 'all') return 'All categories';
+    return state.categories.find(c => c.id === id)?.name || 'Uncategorized';
+  }
+
+  function getCategoryForProduct(product) {
+    return state.categories.find(c => c.id === product.categoryId);
+  }
+
+
+  function padOrderNo(value, size = 3) {
+    const n = Number(value || 0);
+    if (!n) return '—';
+    return String(n).padStart(size, '0');
+  }
+
+  function getOrderSequenceFromCode(code) {
+    const match = String(code || '').match(/(\d+)$/);
+    return match ? Number(match[1]) : null;
+  }
+
+  function orderDisplayLabel(order) {
+    if (!order) return 'Order';
+    const no = padOrderNo(order.sequenceNo || getOrderSequenceFromCode(order.code) || 0);
+    return order.type === 'takeaway' ? `Takeaway #${no}` : `Order #${no}`;
+  }
+
+  function normalizeOrder(order) {
+    if (!order || typeof order !== 'object') return null;
+    order.id = order.id || uid('ord');
+    order.code = order.code || `1911-${padOrderNo(order.sequenceNo || getOrderSequenceFromCode(order.code) || 1, 4)}`;
+    order.sequenceNo = Number(order.sequenceNo || getOrderSequenceFromCode(order.code) || 0) || null;
+    order.type = order.type === 'takeaway' ? 'takeaway' : 'dine-in';
+    order.tableId = order.tableId || null;
+    order.tableLabel = order.tableLabel || (order.type === 'takeaway'
+      ? orderDisplayLabel(order)
+      : (state.tables.find(t => t.id === order.tableId)?.label || 'Table'));
+    order.status = order.status || (order.paymentStatus === 'paid' ? 'paid' : 'open');
+    order.paymentStatus = order.paymentStatus || (order.status === 'paid' ? 'paid' : 'unpaid');
+    order.items = Array.isArray(order.items) ? order.items : [];
+    order.discountType = order.discountType || 'amount';
+    order.discountValue = Number(order.discountValue || 0);
+    order.notes = String(order.notes || '');
+    order.subtotal = Number(order.subtotal || 0);
+    order.discountAmount = Number(order.discountAmount || 0);
+    order.total = Number(order.total || 0);
+    order.createdAt = Number(order.createdAt || Date.now());
+    order.updatedAt = Number(order.updatedAt || order.createdAt);
+    order.sentAt = order.sentAt ? Number(order.sentAt) : null;
+    order.paidAt = order.paidAt ? Number(order.paidAt) : null;
+    order.paymentMethod = order.paymentMethod || null;
+    order.cashReceived = Number(order.cashReceived || 0);
+    order.changeDue = Number(order.changeDue || 0);
+    order.staffCreatedId = order.staffCreatedId || null;
+    order.staffPaidId = order.staffPaidId || null;
+    return order;
+  }
+
+  function focusOrderMenu() {
+    const input = $('orderSearch');
+    if (input) {
+      input.focus({ preventScroll: true });
+      return;
+    }
+    const legacy = $('pickerSearch');
+    if (legacy) legacy.focus({ preventScroll: true });
+  }
+
+  function refreshCurrentOrderWorkspace() {
+    if (state.modalContext === 'table-flow' && state.activeTableFlowId) {
+      openTableOrderModal(state.activeTableFlowId);
+      return;
+    }
+    if (state.modalContext === 'takeaway-flow') {
+      const order = currentOrder();
+      if (order && order.type === 'takeaway') {
+        openTakeawayFlow(order.id);
+      }
+    }
+  }
+
+  function setOrderNote(orderId, value) {
+    const order = getOrderById(orderId);
+    if (!order || order.status === 'paid') return;
+    order.notes = String(value || '');
+    order.updatedAt = Date.now();
+    saveState();
+    renderAll();
+    refreshCurrentOrderWorkspace();
+  }
+
+  function renderOrderMenuSection(order, context) {
+    const activeId = state.activeCategoryId || 'all';
+    const search = (state.searchProducts || '').trim().toLowerCase();
+    const categories = [{ id: 'all', name: 'All' }].concat(state.categories.slice().sort((a, b) => a.order - b.order).filter(c => c.active !== false));
+    const products = state.products
+      .filter(p => activeId === 'all' ? true : p.categoryId === activeId)
+      .filter(p => {
+        if (!search) return true;
+        const hay = [p.name, p.description, getCategoryForProduct(p)?.name || ''].join(' ').toLowerCase();
+        return hay.includes(search);
+      });
+
+    return `
+      <div class="orderPane menu" id="orderMenuPane">
+        <div class="orderPaneHead">
+          <div>
+            <h4>Menu</h4>
+            <div class="subtle">Search products, choose a category, then tap items to add them.</div>
+          </div>
+          <div class="tag" id="orderProductCount">${products.length} item${products.length === 1 ? '' : 's'}</div>
+        </div>
+        <div class="orderMenuActions">
+          <input class="input" id="orderSearch" type="search" placeholder="Search products..." value="${escapeAttr(state.searchProducts || '')}" oninput="window.__1911.setOrderSearch(this.value)" />
+        </div>
+        <div class="tabs" id="orderCategoryTabs">
+          ${categories.map(cat => `<button class="tab ${activeId === cat.id ? 'active' : ''}" onclick="window.__1911.setOrderCategory('${cat.id}')">${escapeHtml(cat.name)}</button>`).join('')}
+        </div>
+        <div class="menuGrid" id="orderProductsGrid">
+          ${products.length ? products.map(p => {
+            const catName = getCategoryForProduct(p)?.name || 'Uncategorized';
+            const img = p.image?.trim() || '';
+            const fallback = escapeHtml((p.name || 'P').slice(0, 1).toUpperCase());
+            const available = p.available !== false;
+            return `
+              <button class="productCard" ${available ? `onclick="window.__1911.addProduct('${p.id}')"` : 'disabled'}>
+                <div class="productImage">${img ? `<img src="${escapeAttr(img)}" alt="${escapeAttr(p.name)}" />` : `<div class="fallback">${fallback}</div>`}</div>
+                <div class="productBody">
+                  <div class="productTop">
+                    <h3 class="productName">${escapeHtml(p.name)}</h3>
+                    <div class="productPrice">${formatMoney(p.price)}</div>
+                  </div>
+                  <p class="productDesc">${escapeHtml(p.description || 'No description')}</p>
+                  <div class="productFooter">
+                    <span class="tag">${escapeHtml(catName)}</span>
+                    <span>${available ? 'Available' : 'Unavailable'}</span>
+                  </div>
+                </div>
+              </button>
+            `;
+          }).join('') : `<div class="emptyState">No products found.</div>`}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOrderCartSection(order, context, titleLabel = null) {
+    const items = order?.items || [];
+    const itemCount = order?.itemCount || 0;
+    const total = order?.total || 0;
+    const statusText = order ? (order.paymentStatus === 'awaiting_payment' ? 'Awaiting payment' : 'Open') : 'Available';
+    const statusClass = order ? 'occupied' : 'available';
+    const noteValue = escapeAttr(order?.notes || '');
+    const itemRows = items.length ? items.map(item => {
+      const line = formatMoney(item.lineTotal || 0);
+      const variant = item.variantName ? ` · ${escapeHtml(item.variantName)}` : '';
+      const note = item.note ? `<div class="subtle">${escapeHtml(item.note)}</div>` : '';
+      const controls = `
+        <div class="qtyGroup">
+          <button class="mini" onclick="window.__1911.decreaseItem('${order.id}','${item.key}')">−</button>
+          <div class="qtyChip">${item.qty}</div>
+          <button class="mini" onclick="window.__1911.increaseItem('${order.id}','${item.key}')">+</button>
+          <button class="mini ghost" onclick="window.__1911.editItemNote('${order.id}','${item.key}')">Note</button>
+          <button class="mini danger" onclick="window.__1911.removeItem('${order.id}','${item.key}')">Remove</button>
+        </div>`;
+      return `
+        <div class="orderItem">
+          <div class="orderItemTop">
+            <div>
+              <strong>${escapeHtml(item.productName || 'Item')}${variant}</strong>
+              ${note || `<div class="subtle">&nbsp;</div>`}
+            </div>
+            <div style="text-align:right"><strong>${line}</strong></div>
+          </div>
+          ${controls}
+        </div>`;
+    }).join('') : `<div class="emptyState">No items yet. Tap a product to add it to this order.</div>`;
+
+    const resolvedLabel = titleLabel || (context === 'takeaway' ? 'Takeaway' : 'Table');
+    const resolvedSubLabel = order?.tableLabel || resolvedLabel;
+
+    return `
+      <div class="orderPane cart">
+        <div class="orderPaneHead">
+          <div>
+            <h4>${escapeHtml(order ? orderDisplayLabel(order) : resolvedLabel)}</h4>
+            <div class="subtle">${escapeHtml(resolvedSubLabel)} · ${itemCount} item${itemCount === 1 ? '' : 's'} · ${formatMoney(total)}</div>
+          </div>
+          <div class="tag ${statusClass}">${statusText}</div>
+        </div>
+
+        <div class="orderNoteBox">
+          <div class="formLabel" style="margin:0">Order note</div>
+          <textarea class="textarea" id="orderNoteInput" placeholder="Add a note for the full order..." ${order ? `oninput="window.__1911.setOrderNote('${order.id}', this.value)"` : 'disabled'}>${noteValue}</textarea>
+          <div class="orderHint">Saved to the receipt, history, and order record.</div>
+        </div>
+
+        <div class="orderItems">
+          ${itemRows}
+        </div>
+
+        <div class="orderTotals">
+          <div class="totalRow"><span>Subtotal</span><strong>${formatMoney(order?.subtotal || 0)}</strong></div>
+          <div class="totalRow"><span>Discount</span><strong>-${formatMoney(order?.discountAmount || 0)}</strong></div>
+          <div class="totalRow final"><span>Total</span><strong>${formatMoney(total)}</strong></div>
+          <div class="totalRow"><span>Items</span><strong>${itemCount}</strong></div>
+        </div>
+
+        <div class="checkoutActions" style="margin-top:4px">
+          <button class="mini primary" onclick="window.__1911.focusOrderMenu()">➕ Add Item</button>
+          <button class="mini good" onclick="window.__1911.closeOrderToCheckout()">PROCEED TO CHECKOUT</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOrderWorkspace(orderId, context) {
+    const order = getOrderById(orderId) || currentOrder();
+    const table = state.activeTableFlowId ? getTableById(state.activeTableFlowId) : (order?.tableId ? getTableById(order.tableId) : null);
+    const titleLabel = context === 'takeaway' ? 'TAKEAWAY' : tableLabelFor(table);
+    const subtitle = context === 'takeaway'
+      ? 'Independent takeaway order'
+      : 'Table order and menu in one screen';
+    const tagClass = order ? (order.paymentStatus === 'awaiting_payment' ? 'awaiting' : 'occupied') : 'available';
+    const tagText = order ? (order.paymentStatus === 'awaiting_payment' ? 'Awaiting payment' : 'Open') : 'Open';
+
+    return `
+      <div class="flowCard">
+        <div class="panelHead" style="padding:0;border:0;margin-bottom:12px;align-items:flex-start">
+          <div>
+            <h2 style="margin:0">${escapeHtml(titleLabel)}</h2>
+            <div class="subtle">${escapeHtml(subtitle)}</div>
+          </div>
+          <div class="tag ${tagClass}">${tagText}</div>
+        </div>
+        <div class="orderWorkspace">
+          ${renderOrderMenuSection(order, context)}
+          ${renderOrderCartSection(order, context, titleLabel)}
+        </div>
+      </div>
+    `;
+  }
+
+  function getBrowserData() {
+    const activeId = state.activeCategoryId || 'all';
+    const search = (state.searchProducts || '').trim().toLowerCase();
+    const categories = [{ id: 'all', name: 'All' }].concat(
+      state.categories.slice().sort((a, b) => a.order - b.order).filter(c => c.active !== false)
+    );
+    const products = state.products
+      .filter(p => activeId === 'all' ? true : p.categoryId === activeId)
+      .filter(p => {
+        if (!search) return true;
+        const hay = [p.name, p.description, getCategoryForProduct(p)?.name || ''].join(' ').toLowerCase();
+        return hay.includes(search);
+      });
+    return { activeId, search, categories, products };
+  }
+
+  function renderBrowserTabs(mode, categories, activeId) {
+    const setter = mode === 'picker' ? 'setPickerCategory' : 'setOrderCategory';
+    return categories.map(cat => `<button class="tab ${activeId === cat.id ? 'active' : ''}" onclick="window.__1911.${setter}('${cat.id}')">${escapeHtml(cat.name)}</button>`).join('');
+  }
+
+  function renderBrowserCards(products) {
+    return products.length ? products.map(p => {
+      const catName = getCategoryForProduct(p)?.name || 'Uncategorized';
+      const img = p.image?.trim() || '';
+      const fallback = escapeHtml((p.name || 'P').slice(0, 1).toUpperCase());
+      const available = p.available !== false;
+      return `
+        <button class="productCard" ${available ? `onclick="window.__1911.addProduct('${p.id}')"` : 'disabled'}>
+          <div class="productImage">${img ? `<img src="${escapeAttr(img)}" alt="${escapeAttr(p.name)}" />` : `<div class="fallback">${fallback}</div>`}</div>
+          <div class="productBody">
+            <div class="productTop">
+              <h3 class="productName">${escapeHtml(p.name)}</h3>
+              <div class="productPrice">${formatMoney(p.price)}</div>
+            </div>
+            <p class="productDesc">${escapeHtml(p.description || 'No description')}</p>
+            <div class="productFooter">
+              <span class="tag">${escapeHtml(catName)}</span>
+              <span>${available ? 'Available' : 'Unavailable'}</span>
+            </div>
+          </div>
+        </button>
+      `;
+    }).join('') : `<div class="emptyState">No products found.</div>`;
+  }
+
+  function refreshVisibleProductBrowser() {
+    const { activeId, categories, products } = getBrowserData();
+    const mode = state.flowStage === 'picker' ? 'picker' : 'order';
+    const tabsHtml = renderBrowserTabs(mode, categories, activeId);
+    const gridHtml = renderBrowserCards(products);
+
+    const orderTabs = $('orderCategoryTabs');
+    const orderGrid = $('orderProductsGrid');
+    if (orderTabs && orderGrid) {
+      orderTabs.innerHTML = tabsHtml;
+      orderGrid.innerHTML = gridHtml;
+      const orderCount = $('orderProductCount');
+      if (orderCount) orderCount.textContent = `${products.length} item${products.length === 1 ? '' : 's'}`;
+      const orderSearch = $('orderSearch');
+      if (orderSearch && document.activeElement !== orderSearch) orderSearch.value = state.searchProducts || '';
+    }
+
+    const pickerTabs = $('pickerCategoryTabs');
+    const pickerGrid = $('pickerProductsGrid');
+    if (pickerTabs && pickerGrid) {
+      pickerTabs.innerHTML = tabsHtml;
+      pickerGrid.innerHTML = gridHtml;
+      const pickerSearch = $('pickerSearch');
+      if (pickerSearch && document.activeElement !== pickerSearch) pickerSearch.value = state.searchProducts || '';
+    }
+  }
+
+  function getProductById(id) {
+    return state.products.find(p => p.id === id) || null;
+  }
+
+  function getTableById(id) {
+    return state.tables.find(t => t.id === id) || null;
+  }
+
+  function getOrderById(id) {
+    return state.activeOrders.find(o => o.id === id) || state.orders.find(o => o.id === id) || null;
+  }
+
+  function getActiveOrderByTableId(tableId) {
+    const table = getTableById(tableId);
+    if (!table || !table.orderId) return null;
+    return getOrderById(table.orderId);
+  }
+
+  function uidLabel(prefix, value) {
+    return `${prefix.toUpperCase()}-${String(value).padStart(4, '0')}`;
+  }
+
+  function recalcOrder(order) {
+    order.items = Array.isArray(order.items) ? order.items : [];
+    let subtotal = 0;
+    let itemCount = 0;
+    order.items = order.items.filter(item => item && item.productId);
+    order.items.forEach(item => {
+      const product = getProductById(item.productId);
+      if (!product) return;
+      const base = Number(item.unitPrice ?? product.price ?? 0);
+      const variantDelta = Number(item.variantPriceDelta || 0);
+      const linePrice = (base + variantDelta) * Number(item.qty || 0);
+      subtotal += linePrice;
+      itemCount += Number(item.qty || 0);
+      item.lineTotal = linePrice;
+      item.productName = product.name;
+      item.categoryId = product.categoryId;
+      item.description = product.description;
+      item.image = product.image;
+      item.available = product.available;
+    });
+
+    const discountValue = Number(order.discountValue || 0);
+    let discountAmount = 0;
+    if (order.discountType === 'percent') {
+      discountAmount = Math.min(subtotal, subtotal * (discountValue / 100));
+    } else {
+      discountAmount = Math.min(subtotal, discountValue);
+    }
+    const total = Math.max(0, subtotal - discountAmount);
+
+    order.subtotal = subtotal;
+    order.discountAmount = discountAmount;
+    order.total = total;
+    order.itemCount = itemCount;
+    return order;
+  }
+
+  function currentOrder() {
+    if (!state.currentOrderId) return null;
+    return getOrderById(state.currentOrderId);
+  }
+
+  function setCurrentOrder(orderId) {
+    state.currentOrderId = orderId;
+    saveState();
+    renderAll();
+  }
+
+  function ensureCurrentOrderForTable(tableId) {
+    const table = getTableById(tableId);
+    if (!table) return null;
+    let order = getActiveOrderByTableId(tableId);
+    if (order) return order;
+    order = createOrder('dine-in', tableId);
+    return order;
+  }
+
+  function createOrder(type, tableId = null) {
+    const sequenceNo = Number(state.orderSequence || 1);
+    state.orderSequence = sequenceNo + 1;
+    const order = {
+      id: uid('ord'),
+      code: `1911-${String(sequenceNo).padStart(4, '0')}`,
+      sequenceNo,
+      type,
+      tableId,
+      tableLabel: type === 'takeaway'
+        ? `Takeaway #${padOrderNo(sequenceNo)}`
+        : (tableId ? (getTableById(tableId)?.label || 'Table') : 'Table'),
+      status: 'open',
+      paymentStatus: 'unpaid',
+      items: [],
+      discountType: 'amount',
+      discountValue: 0,
+      subtotal: 0,
+      discountAmount: 0,
+      total: 0,
+      notes: '',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      sentAt: null,
+      paidAt: null,
+      paymentMethod: null,
+      cashReceived: 0,
+      changeDue: 0,
+      staffCreatedId: state.currentStaffId,
+      staffPaidId: null
+    };
+    state.activeOrders.unshift(order);
+    if (tableId) {
+      const table = getTableById(tableId);
+      if (table) table.orderId = order.id;
+    }
+    recalcOrder(order);
+    state.currentOrderId = order.id;
+    saveState();
+    renderAll();
+    toast(`${type === 'takeaway' ? 'Takeaway' : 'Table'} order created.`);
+    return order;
+  }
+
+  function createTakeaway() {
+    return createOrder('takeaway', null);
+  }
+
+  function bindEvents() {
+    $('adminButton').addEventListener('click', openAdmin);
+    $('staffButton').addEventListener('click', openStaffSwitcher);
+    $('takeawayButton').addEventListener('click', () => {
+      window.__1911.openTakeawayHub();
+    });
+    $('productSearch').addEventListener('input', (e) => {
+      state.searchProducts = e.target.value || '';
+      saveState();
+      renderProducts();
+    });
+    $('availabilityFilter').addEventListener('change', () => renderProducts());
+    $('historySearch').addEventListener('input', (e) => {
+      state.searchHistory = e.target.value || '';
+      saveState();
+      renderHistory();
+    });
+    $('historyRange').addEventListener('change', (e) => {
+      state.historyRange = e.target.value;
+      saveState();
+      renderHistory();
+      renderStats();
+    });
+    $('sendOrderButton').addEventListener('click', sendCurrentOrder);
+    $('discountButton').addEventListener('click', openDiscountModal);
+    $('checkoutButton').addEventListener('click', openCheckoutModal);
+    $('closeOrderButton').addEventListener('click', closeCurrentOrder);
+    $('modalCloseButton').addEventListener('click', closeModal);
+    $('modal').addEventListener('click', (e) => {
+      if (e.target === $('modal')) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  }
+
+  function renderAll() {
+    renderHeaderState();
+    renderStats();
+    renderTables();
+    renderCategories();
+    renderProducts();
+    renderOrderPanel();
+    renderHistory();
+    renderQuickReports();
+    saveState();
+  }
+
+  function renderHeaderState() {
+    const staff = getCurrentStaff();
+    $('staffButtonLabel').textContent = `${staff?.name || 'Owner'} · ${staff?.role || 'OWNER'}`;
+    const shiftLabel = state.settings.shiftLabel || '5:00 PM – 2:00 AM';
+    const onDuty = state.staff.filter(s => s.active !== false);
+    const dutyNames = (onDuty.length ? onDuty : [staff]).slice(0, 3).map(s => s?.name || '—');
+    const dutyExtra = onDuty.length > 3 ? ` +${onDuty.length - 3}` : '';
+    if ($('shiftChip')) {
+      $('shiftChip').innerHTML = `
+        <span class="shiftLine shiftLabel">SHIFT: ${escapeHtml(shiftLabel)}</span>
+        <span class="shiftLine shiftValue">ON DUTY: ${escapeHtml(dutyNames.join(', ') + dutyExtra)}</span>
+      `;
+    }
+    if ($('tableSummaryTag')) $('tableSummaryTag').textContent = `${state.tables.length} tables`;
+    if ($('productCountTag')) $('productCountTag').textContent = `${state.products.filter(p => p.available).length} available / ${state.products.length} total`;
+    if ($('historySummaryTag')) $('historySummaryTag').textContent = `${ordersInRange('today').length} orders today`;
+  }
+
+  function renderStats() {
+    const todayOrders = ordersInRange('today');
+    const weekOrders = ordersInRange('week');
+    const monthOrders = ordersInRange('month');
+    const revenueToday = sumOrders(todayOrders);
+    const revenueWeek = sumOrders(weekOrders);
+    const revenueMonth = sumOrders(monthOrders);
+    const avg = todayOrders.length ? revenueToday / todayOrders.length : 0;
+    const topSeller = getTopProducts(todayOrders)[0];
+
+    $('statsRow').innerHTML = `
+      <div class="statCard">
+        <div class="statLabel">Today's revenue</div>
+        <div class="statValue goldValue">${formatMoney(revenueToday)}</div>
+        <div class="statHint">${todayOrders.length} completed orders</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">Orders today</div>
+        <div class="statValue">${todayOrders.length}</div>
+        <div class="statHint">Average order value: ${formatMoney(avg)}</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">Weekly revenue</div>
+        <div class="statValue">${formatMoney(revenueWeek)}</div>
+        <div class="statHint">${weekOrders.length} orders in the last 7 days</div>
+      </div>
+      <div class="statCard">
+        <div class="statLabel">Monthly revenue</div>
+        <div class="statValue">${formatMoney(revenueMonth)}</div>
+        <div class="statHint">${topSeller ? `Top item: ${topSeller.name} (${topSeller.qty})` : 'No top sellers yet'}</div>
+      </div>
+    `;
+  }
+
+  function renderTables() {
+    $('tablesGrid').innerHTML = state.tables.map(table => {
+      const order = getActiveOrderByTableId(table.id);
+      const status = tableStatus(table);
+      const cls = status.key;
+      const count = order ? order.itemCount || 0 : 0;
+      const total = order ? order.total || 0 : 0;
+      const label = status.label;
+      const extra = order ? `${count} item${count === 1 ? '' : 's'} · ${formatMoney(total)}` : status.sub;
+      return `
+        <button class="tableCard ${cls}" data-table-id="${table.id}" onclick="window.__1911.selectTable('${table.id}')">
+          <div class="tableTop">
+            <div class="tableTitle">${table.label}</div>
+            <div class="statusBadge ${cls}">${label}</div>
+          </div>
+          <div class="tableMeta">
+            <strong>${order ? formatMoney(total) : 'Ready'}</strong>
+            <small>${extra}</small>
+          </div>
+          <div class="tableFooter">
+            <span class="tag">${order ? (order.type === 'takeaway' ? 'Takeaway' : 'Dine-in') : 'Idle'}</span>
+            <span>${status.footer}</span>
+          </div>
+        </button>
+      `;
+    }).join('');
+  }
+
+  function tableStatus(table) {
+    const order = getActiveOrderByTableId(table.id);
+    if (order) {
+      return { key: 'occupied', label: 'Occupied', sub: 'Active order', footer: `${order.itemCount || 0} item${(order.itemCount || 0) === 1 ? '' : 's'}` };
+    }
+    return { key: 'available', label: 'Available', sub: 'Tap to start order', footer: 'Open seat' };
+  }
+
+  function renderCategories() {
+    const activeId = state.activeCategoryId || 'all';
+    const counts = categoryCounts();
+    const chips = [
+      { id: 'all', name: 'All', active: true }
+    ].concat(state.categories.slice().sort((a,b) => a.order - b.order).filter(c => c.active !== false));
+
+    $('categoryTabs').innerHTML = chips.map(cat => `
+      <button class="tab ${activeId === cat.id ? 'active' : ''}" onclick="window.__1911.selectCategory('${cat.id}')">
+        ${cat.name} ${cat.id !== 'all' ? `· ${counts[cat.id] || 0}` : `· ${state.products.length}`}
+      </button>
+    `).join('');
+  }
+
+  function categoryCounts() {
+    const map = {};
+    state.products.forEach(p => {
+      const id = p.categoryId || 'uncategorized';
+      map[id] = (map[id] || 0) + 1;
+    });
+    return map;
+  }
+
+  function renderProducts() {
+    const query = (state.searchProducts || '').trim().toLowerCase();
+    const filter = $('availabilityFilter').value;
+    const catId = state.activeCategoryId || 'all';
+    const filtered = state.products
+      .filter(p => catId === 'all' ? true : p.categoryId === catId)
+      .filter(p => {
+        if (filter === 'available') return p.available;
+        if (filter === 'unavailable') return !p.available;
+        return true;
+      })
+      .filter(p => {
+        if (!query) return true;
+        const hay = [
+          p.name, p.description,
+          getCategoryForProduct(p)?.name || '',
+          ...(p.recipe || []).map(r => getInventoryById(r.inventoryId)?.name || '')
+        ].join(' ').toLowerCase();
+        return hay.includes(query);
+      });
+
+    if (!filtered.length) {
+      $('productsGrid').innerHTML = `<div class="emptyState">No products match your search or filter.</div>`;
+      return;
+    }
+
+    $('productsGrid').innerHTML = filtered.map(p => {
+      const cat = getCategoryForProduct(p)?.name || 'Uncategorized';
+      const img = p.image?.trim() || '';
+      const fallback = p.name.slice(0,1).toUpperCase();
+      const stockNote = p.available ? 'Available' : 'Unavailable';
+      const variantsLabel = (p.variants || []).length ? `${p.variants.length} size option${p.variants.length === 1 ? '' : 's'}` : 'No variants';
+      return `
+        <div class="productCard" role="button" tabindex="0" onclick="window.__1911.addProduct('${p.id}')">
+          <div class="productImage">
+            ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" />` : `<div class="fallback">${escapeHtml(fallback)}</div>`}
+          </div>
+          <div class="productBody">
+            <div class="productTop">
+              <h3 class="productName">${escapeHtml(p.name)}</h3>
+              <div class="productPrice">${formatMoney(p.price)}</div>
+            </div>
+            <p class="productDesc">${escapeHtml(p.description || 'No description provided.')}</p>
+            <div class="productFooter">
+              <span class="tag">${escapeHtml(cat)}</span>
+              <span class="tag">${escapeHtml(variantsLabel)}</span>
+            </div>
+            <div class="productFooter">
+              <span class="tag ${p.available ? 'good' : 'danger'}">${stockNote}</span>
+              <button class="mini primary" style="min-width:110px">Add to order</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderOrderPanel() {
+    const order = currentOrder();
+    if (!order) {
+      $('currentOrderSub').textContent = 'No order selected';
+      $('orderStatusTag').textContent = 'Idle';
+      $('orderModeLabel').textContent = 'Select a table or start takeaway';
+      $('orderIdLabel').textContent = '—';
+      $('orderTypeLabel').textContent = '—';
+      $('orderItemsCountLabel').textContent = '0';
+      $('orderItems').innerHTML = `<div class="emptyState">Choose a table or create a takeaway order to begin.</div>`;
+      $('orderTotals').innerHTML = '';
+      $('sendOrderButton').disabled = true;
+      $('discountButton').disabled = true;
+      $('checkoutButton').disabled = true;
+      $('closeOrderButton').disabled = true;
+      return;
+    }
+
+    $('sendOrderButton').disabled = false;
+    $('discountButton').disabled = false;
+    $('checkoutButton').disabled = false;
+    $('closeOrderButton').disabled = false;
+
+    recalcOrder(order);
+
+    $('currentOrderSub').textContent = `${order.type === 'takeaway' ? 'Takeaway' : 'Dine-in'} order · ${order.status === 'open' ? 'Open' : order.status}`;
+    $('orderStatusTag').textContent = order.status === 'awaiting_payment' ? 'Awaiting payment' : order.status === 'sent' ? 'Sent' : 'Open';
+    $('orderModeLabel').textContent = order.tableId ? (getTableById(order.tableId)?.label || 'Table') : 'Takeaway';
+    $('orderIdLabel').textContent = order.code;
+    $('orderTypeLabel').textContent = order.type === 'takeaway' ? 'Takeaway' : 'Dine-in';
+    $('orderItemsCountLabel').textContent = String(order.itemCount || 0);
+
+    if (!order.items.length) {
+      $('orderItems').innerHTML = `<div class="emptyState">No items yet. Add products from the menu.</div>`;
+    } else {
+      $('orderItems').innerHTML = order.items.map(item => {
+        const line = formatMoney(item.lineTotal || 0);
+        const variant = item.variantName ? ` · ${escapeHtml(item.variantName)}` : '';
+        return `
+          <div class="orderItem">
+            <div class="orderItemTop">
+              <div>
+                <strong>${escapeHtml(item.productName || 'Item')}${variant}</strong>
+                <div class="subtle">${escapeHtml(item.note || item.description || '')}</div>
+              </div>
+              <div style="text-align:right">
+                <strong>${line}</strong>
+              </div>
+            </div>
+            <div class="qtyGroup">
+              <button class="mini" onclick="window.__1911.decreaseItem('${order.id}','${item.key}')">−</button>
+              <div class="qtyChip">${item.qty}</div>
+              <button class="mini" onclick="window.__1911.increaseItem('${order.id}','${item.key}')">+</button>
+              <button class="mini ghost" onclick="window.__1911.editItemNote('${order.id}','${item.key}')">Note</button>
+              <button class="mini danger" onclick="window.__1911.removeItem('${order.id}','${item.key}')">Remove</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    $('orderTotals').innerHTML = `
+      <div class="totalRow"><span>Subtotal</span><strong>${formatMoney(order.subtotal)}</strong></div>
+      <div class="totalRow"><span>Discount</span><strong>-${formatMoney(order.discountAmount || 0)}</strong></div>
+      <div class="totalRow final"><span>Total</span><strong>${formatMoney(order.total)}</strong></div>
+      <div class="totalRow"><span>Payment</span><strong>${order.paymentMethod || 'Unpaid'}</strong></div>
+    `;
+  }
+
+  function renderHistory() {
+    const query = (state.searchHistory || '').trim().toLowerCase();
+    const range = state.historyRange || 'all';
+    const orders = filteredHistory(range)
+      .filter(order => {
+        if (!query) return true;
+        const hay = [
+          order.code, order.tableLabel, order.type, order.paymentMethod,
+          order.staffPaidName || order.staffCreatedName || '',
+          formatMoney(order.total), formatMoney(order.subtotal),
+          order.notes || '',
+          ...(order.items || []).map(i => `${i.productName} ${i.note || ''}`)
+        ].join(' ').toLowerCase();
+        return hay.includes(query);
+      })
+      .sort((a,b) => b.paidAt - a.paidAt);
+
+    if (!orders.length) {
+      $('historyList').innerHTML = `<div class="emptyState">No orders found.</div>`;
+      return;
+    }
+
+    $('historyList').innerHTML = orders.map(order => renderHistoryCard(order)).join('');
+  }
+
+  function renderQuickReports() {
+    const today = ordersInRange('today');
+    const week = ordersInRange('week');
+    const month = ordersInRange('month');
+    const top = getTopProducts(today)[0];
+    const topCat = getTopCategories(today)[0];
+    const avg = today.length ? sumOrders(today) / today.length : 0;
+
+    $('quickReports').innerHTML = `
+      <div class="reportCard">
+        <span class="statLabel">Avg order</span>
+        <b>${formatMoney(avg)}</b>
+      </div>
+      <div class="reportCard">
+        <span class="statLabel">Orders today</span>
+        <b>${today.length}</b>
+      </div>
+      <div class="reportCard">
+        <span class="statLabel">Top product</span>
+        <b>${top ? escapeHtml(top.name) : '—'}</b>
+      </div>
+      <div class="reportCard">
+        <span class="statLabel">Top category</span>
+        <b>${topCat ? escapeHtml(topCat.name) : '—'}</b>
+      </div>
+      <div class="reportCard">
+        <span class="statLabel">Weekly revenue</span>
+        <b>${formatMoney(sumOrders(week))}</b>
+      </div>
+      <div class="reportCard">
+        <span class="statLabel">Monthly revenue</span>
+        <b>${formatMoney(sumOrders(month))}</b>
+      </div>
+    `;
+  }
+
+  function filteredHistory(range) {
+    const now = Date.now();
+    return state.orders.filter(order => {
+      const paidAt = order.paidAt || order.createdAt;
+      if (range === 'today') return paidAt >= startOfDay();
+      if (range === 'week') return paidAt >= startOfWeek();
+      if (range === 'month') return paidAt >= startOfMonth();
+      return true;
+    });
+  }
+
+  function ordersInRange(range) {
+    return filteredHistory(range);
+  }
+
+  function sumOrders(orders) {
+    return orders.reduce((sum, o) => sum + Number(o.total || 0), 0);
+  }
+
+  function getTopProducts(orders) {
+    const map = new Map();
+    orders.forEach(order => {
+      (order.items || []).forEach(item => {
+        const prev = map.get(item.productName) || { name: item.productName, qty: 0, revenue: 0 };
+        prev.qty += Number(item.qty || 0);
+        prev.revenue += Number(item.lineTotal || 0);
+        map.set(item.productName, prev);
+      });
+    });
+    return [...map.values()].sort((a,b) => b.qty - a.qty || b.revenue - a.revenue);
+  }
+
+  function getTopCategories(orders) {
+    const map = new Map();
+    orders.forEach(order => {
+      (order.items || []).forEach(item => {
+        const name = getCategoryName(item.categoryId);
+        const prev = map.get(name) || { name, qty: 0, revenue: 0 };
+        prev.qty += Number(item.qty || 0);
+        prev.revenue += Number(item.lineTotal || 0);
+        map.set(name, prev);
+      });
+    });
+    return [...map.values()].sort((a,b) => b.qty - a.qty || b.revenue - a.revenue);
+  }
+
+
+  function renderHistoryCard(order) {
+    const items = (order.items || []).slice(0, 4).map(i => `
+      <div class="historyRow">
+        <span>${i.qty} × ${escapeHtml(i.productName)}${i.variantName ? ` (${escapeHtml(i.variantName)})` : ''}</span>
+        <span>${formatMoney(i.lineTotal || 0)}</span>
+      </div>
+      ${i.note ? `<div class="historyMeta" style="margin-top:-2px">Item note: ${escapeHtml(i.note)}</div>` : ''}
+    `).join('');
+    const staff = state.staff.find(s => s.name === (order.staffPaidName || order.staffCreatedName || ''));
+    const staffName = escapeHtml(order.staffPaidName || order.staffCreatedName || '—');
+    const staffRole = escapeHtml(staff?.role || '—');
+    const orderNote = order.notes ? `<div class="historyMeta">Order note: ${escapeHtml(order.notes)}</div>` : '';
+    return `
+      <button class="historyItem" onclick="window.__1911.openReceipt('${order.id}')">
+        <div class="historyItemTop">
+          <strong>${escapeHtml(orderDisplayLabel(order))}</strong>
+          <span class="historyBadge">${escapeHtml(order.paymentMethod || 'Paid')}</span>
+        </div>
+        <div class="historyMeta">${formatDateTime(order.paidAt || order.createdAt)}</div>
+        <div class="historyMeta">${escapeHtml(order.tableLabel)} · ${order.type === 'takeaway' ? 'Takeaway' : 'Dine-in'} · ${order.itemCount || 0} item${(order.itemCount || 0) === 1 ? '' : 's'}</div>
+        ${orderNote}
+        <div style="margin:2px 0 0">${items}</div>
+        <div class="historyBadges">
+          <span class="historyBadge">${formatMoney(order.total)}</span>
+          <span class="historyBadge">Staff: ${staffName}</span>
+          <span class="historyBadge">Role: ${staffRole}</span>
+        </div>
+      </button>
+    `;
+  }
+
+  function addProduct(productId, forceVariant = null) {
+    let order = currentOrder();
+    if (!order) order = createTakeaway();
+    const product = getProductById(productId);
+    if (!product) return;
+    if (!product.available) {
+      toast('This product is currently unavailable.');
+      return;
+    }
+
+    if (Array.isArray(product.variants) && product.variants.length && !forceVariant) {
+      return openVariantModal(product);
+    }
+
+    const variant = forceVariant || null;
+    const variantName = variant?.name || '';
+    const variantDelta = Number(variant?.priceDelta || 0);
+    const existing = order.items.find(item => item.productId === product.id && item.variantName === variantName);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      order.items.push({
+        key: uid('itm'),
+        productId: product.id,
+        productName: product.name,
+        unitPrice: Number(product.price || 0),
+        variantName,
+        variantPriceDelta: variantDelta,
+        qty: 1,
+        note: '',
+        lineTotal: 0,
+        categoryId: product.categoryId,
+        description: product.description,
+        image: product.image
+      });
+    }
+    recalcOrder(order);
+    order.updatedAt = Date.now();
+    saveState();
+    renderAll();
+    refreshCurrentOrderWorkspace();
+    toast(`${product.name} added to order.`);
+  }
+
+  function increaseItem(orderId, itemKey) {
+    const order = getOrderById(orderId);
+    if (!order || order.status === 'paid') return;
+    const item = order.items.find(i => i.key === itemKey);
+    if (!item) return;
+    item.qty += 1;
+    recalcOrder(order);
+    order.updatedAt = Date.now();
+    saveState(); renderAll();
+    refreshCurrentOrderWorkspace();
+  }
+
+  function decreaseItem(orderId, itemKey) {
+    const order = getOrderById(orderId);
+    if (!order || order.status === 'paid') return;
+    const item = order.items.find(i => i.key === itemKey);
+    if (!item) return;
+    item.qty -= 1;
+    if (item.qty <= 0) order.items = order.items.filter(i => i.key !== itemKey);
+    recalcOrder(order);
+    order.updatedAt = Date.now();
+    saveState(); renderAll();
+    refreshCurrentOrderWorkspace();
+  }
+
+  function removeItem(orderId, itemKey) {
+    const order = getOrderById(orderId);
+    if (!order || order.status === 'paid') return;
+    order.items = order.items.filter(i => i.key !== itemKey);
+    recalcOrder(order);
+    order.updatedAt = Date.now();
+    saveState(); renderAll();
+    refreshCurrentOrderWorkspace();
+  }
+
+  function editItemNote(orderId, itemKey) {
+    const order = getOrderById(orderId);
+    if (!order || order.status === 'paid') return;
+    const item = order.items.find(i => i.key === itemKey);
+    if (!item) return;
+    const note = prompt(`Note for ${item.productName}:`, item.note || '');
+    if (note === null) return;
+    item.note = note.trim();
+    saveState(); renderAll();
+    refreshCurrentOrderWorkspace();
+  }
+
+  function selectCategory(id) {
+    state.activeCategoryId = id;
+    saveState();
+    renderCategories();
+    renderProducts();
+  }
+
+  function selectTable(tableId) {
+    const order = getActiveOrderByTableId(tableId);
+    if (order) {
+      setCurrentOrder(order.id);
+      toast(`Opened ${getTableById(tableId)?.label || 'table'}.`);
+      return;
+    }
+    const newOrder = createOrder('dine-in', tableId);
+    setCurrentOrder(newOrder.id);
+    toast(`New order started for ${getTableById(tableId)?.label || 'table'}.`);
+  }
+
+  function sendCurrentOrder() {
+    const order = currentOrder();
+    if (!order) return;
+    if (!order.items.length) {
+      toast('Add products before sending.');
+      return;
+    }
+    order.status = 'sent';
+    order.updatedAt = Date.now();
+    recalcOrder(order);
+    saveState(); renderAll();
+    refreshCurrentOrderWorkspace();
+    toast('Order sent.');
+  }
+
+  function openDiscountModal() {
+    const order = currentOrder();
+    if (!order) return;
+    const body = `
+      <div class="adminForm">
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Discount type</div>
+            <select class="select" id="discountType">
+              <option value="amount" ${order.discountType === 'amount' ? 'selected' : ''}>Amount</option>
+              <option value="percent" ${order.discountType === 'percent' ? 'selected' : ''}>Percent</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="formLabel">Discount value</div>
+            <input class="input" id="discountValue" type="number" min="0" step="0.01" value="${Number(order.discountValue || 0)}" />
+          </div>
+        </div>
+        <button class="mini primary" id="applyDiscount">Apply discount</button>
+      </div>
+    `;
+    openModal('Order Discount', 'Apply a manual discount to the current order.', body, true);
+    $('applyDiscount').onclick = () => {
+      order.discountType = $('discountType').value;
+      order.discountValue = Number($('discountValue').value || 0);
+      recalcOrder(order);
+      order.updatedAt = Date.now();
+      saveState();
+      closeModal();
+      renderAll();
+      refreshCurrentOrderWorkspace();
+      toast('Discount updated.');
+    };
+  }
+
+  function openCheckoutModal(orderId = null) {
+    const order = orderId ? getOrderById(orderId) : currentOrder();
+    if (!order) return;
+    if (!order.items.length) {
+      toast('This order has no items.');
+      return;
+    }
+    recalcOrder(order);
+    state.checkoutDraft = { orderId: order.id };
+    const body = `
+      <div class="checkoutGrid">
+        <div class="receipt">
+          <h4>1911 Café</h4>
+          <div class="receiptMeta">
+            ${escapeHtml(orderDisplayLabel(order))}<br>
+            Order ID: ${escapeHtml(order.code)}<br>
+            Table / Mode: ${escapeHtml(order.tableLabel)} · ${escapeHtml(order.type)}<br>
+            Staff: ${escapeHtml(getCurrentStaff()?.name || '—')}<br>
+            ${formatDateTime(Date.now())}
+          </div>
+          ${order.notes ? `<div class="receiptMeta" style="margin-top:10px">Order note: ${escapeHtml(order.notes)}</div>` : ''}
+          <div class="receiptList">
+            ${(order.items || []).map(item => `
+              <div class="receiptRow"><span>${item.qty} × ${escapeHtml(item.productName)}${item.variantName ? ` (${escapeHtml(item.variantName)})` : ''}</span><span>${formatMoney(item.lineTotal || 0)}</span></div>
+              ${item.note ? `<div class="receiptMeta" style="margin:-2px 0 6px">${escapeHtml(item.note)}</div>` : ''}
+            `).join('')}
+          </div>
+          <div class="receiptTotals">
+            <div class="receiptRow"><span>Subtotal</span><span>${formatMoney(order.subtotal)}</span></div>
+            <div class="receiptRow"><span>Discount</span><span>-${formatMoney(order.discountAmount || 0)}</span></div>
+            <div class="receiptRow final"><span>Total</span><span>${formatMoney(order.total)}</span></div>
+          </div>
+        </div>
+        <div class="adminForm">
+          <div class="field">
+            <div class="formLabel">Payment method</div>
+            <select class="select" id="paymentMethod">
+              ${state.settings.paymentMethods.map(m => `<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <div class="formLabel">Cash received</div>
+            <input class="input" id="cashReceived" type="number" min="0" step="0.01" value="${order.total}" />
+          </div>
+          <div class="reportGrid" style="margin-top:0">
+            <div class="reportCard"><span class="statLabel">Subtotal</span><b>${formatMoney(order.subtotal)}</b></div>
+            <div class="reportCard"><span class="statLabel">Discount</span><b>-${formatMoney(order.discountAmount || 0)}</b></div>
+            <div class="reportCard"><span class="statLabel">Final total</span><b>${formatMoney(order.total)}</b></div>
+            <div class="reportCard"><span class="statLabel">Change due</span><b id="changeDuePreview">${formatMoney(0)}</b></div>
+          </div>
+          <div class="checkboxRow">
+            <label><input type="checkbox" id="markPaidClose" checked /> Close table after payment</label>
+          </div>
+          <button class="mini primary" id="confirmPayment">COMPLETE PAYMENT</button>
+        </div>
+      </div>
+    `;
+    openModal('Checkout', 'Review the order and complete payment.', body, true);
+    const cashInput = $('cashReceived');
+    const method = $('paymentMethod');
+    const changePreview = $('changeDuePreview');
+    const updateChange = () => {
+      const val = Number(cashInput.value || 0);
+      const due = Math.max(0, val - order.total);
+      changePreview.textContent = formatMoney(due);
+    };
+    cashInput.addEventListener('input', updateChange);
+    method.addEventListener('change', updateChange);
+    updateChange();
+    $('confirmPayment').onclick = () => {
+      finalizeOrder(order.id, method.value, Number(cashInput.value || 0), $('markPaidClose').checked);
+    };
+  }
+
+  function finalizeOrder(orderId, paymentMethod, cashReceived, closeTableAfterPayment = true) {
+    const order = getOrderById(orderId);
+    if (!order) return;
+    if (order.status === 'paid') {
+      toast('This order has already been paid.');
+      closeModal();
+      return;
+    }
+    recalcOrder(order);
+
+    const stockWarnings = deductInventory(order);
+    order.status = 'paid';
+    order.paymentStatus = 'paid';
+    order.paymentMethod = paymentMethod;
+    order.cashReceived = Number(cashReceived || 0);
+    order.changeDue = paymentMethod === 'Cash' ? Math.max(0, order.cashReceived - order.total) : 0;
+    order.staffPaidId = state.currentStaffId;
+    order.staffPaidName = getCurrentStaff()?.name || '—';
+    order.paidAt = Date.now();
+    order.updatedAt = Date.now();
+
+    // move from active orders to completed
+    state.activeOrders = state.activeOrders.filter(o => o.id !== order.id);
+    state.orders.unshift(safeClone(order));
+
+    const table = order.tableId ? getTableById(order.tableId) : null;
+    if (table && closeTableAfterPayment) {
+      table.orderId = null;
+      table.lastClosedAt = Date.now();
+    } else if (table) {
+      table.orderId = null;
+      table.lastClosedAt = Date.now();
+    }
+
+    state.currentOrderId = state.activeOrders[0]?.id || null;
+    saveState();
+    renderAll();
+    closeModal();
+    toast(stockWarnings.length ? `Payment completed. Stock warnings: ${stockWarnings.join(', ')}` : 'Payment completed.');
+  }
+
+  function deductInventory(order) {
+    const warnings = [];
+    const unitWarnings = [];
+    (order.items || []).forEach(item => {
+      const product = getProductById(item.productId);
+      if (!product || !Array.isArray(product.recipe) || !product.recipe.length) return;
+      product.recipe.forEach(step => {
+        const inv = getInventoryById(step.inventoryId);
+        if (!inv) return;
+        const recipeUnit = step.unit && String(step.unit).trim() ? String(step.unit).trim() : inv.unit;
+        if (!areCompatibleUnits(recipeUnit, inv.unit)) {
+          unitWarnings.push(`${inv.name} (${recipeUnit} → ${inv.unit})`);
+          return;
+        }
+        const perUnitConverted = convertQuantity(Number(step.amount || 0), recipeUnit, inv.unit);
+        if (!perUnitConverted.compatible) {
+          unitWarnings.push(`${inv.name} (${recipeUnit} → ${inv.unit})`);
+          return;
+        }
+        const current = Number(inv.qty || 0);
+        const deduction = Number(perUnitConverted.value || 0) * Number(item.qty || 0);
+        const next = Math.max(0, roundNumber(current - deduction, 6));
+        inv.qty = next;
+        if (state.settings.lowStockAlerts && inv.threshold != null && Number(inv.qty || 0) <= Number(inv.threshold || 0)) {
+          warnings.push(inv.name);
+        }
+      });
+    });
+    saveState();
+    return [...new Set([...warnings, ...unitWarnings])];
+  }
+
+  function closeCurrentOrder() {
+    const order = currentOrder();
+    if (!order) return;
+    if (order.status === 'paid') {
+      state.currentOrderId = state.activeOrders[0]?.id || null;
+      saveState(); renderAll();
+      return;
+    }
+    if (order.items.length && !confirm('Close this order without payment?')) return;
+    if (order.tableId) {
+      const table = getTableById(order.tableId);
+      if (table) {
+        table.orderId = null;
+        table.lastClosedAt = Date.now();
+      }
+    }
+    state.activeOrders = state.activeOrders.filter(o => o.id !== order.id);
+    state.currentOrderId = state.activeOrders[0]?.id || null;
+    saveState();
+    renderAll();
+    toast('Order closed.');
+  }
+
+  function openReceipt(orderId) {
+    const order = getOrderById(orderId);
+    if (!order) return;
+    const body = `
+      <div class="receipt">
+        <h4>1911 Café</h4>
+        <div class="receiptMeta">
+          ${escapeHtml(orderDisplayLabel(order))}<br>
+          Order ID: ${escapeHtml(order.code)}<br>
+          Table / Mode: ${escapeHtml(order.tableLabel)} · ${escapeHtml(order.type)}<br>
+          Created: ${formatDateTime(order.createdAt)}<br>
+          Paid: ${formatDateTime(order.paidAt || order.createdAt)}<br>
+          Payment: ${escapeHtml(order.paymentMethod || '—')}<br>
+          Staff: ${escapeHtml(order.staffPaidName || order.staffCreatedName || '—')}<br>
+          Role: ${escapeHtml((state.staff.find(s => s.name === (order.staffPaidName || order.staffCreatedName || '')) || {}).role || '—')}
+        </div>
+        ${order.notes ? `<div class="receiptMeta" style="margin-top:10px">Order note: ${escapeHtml(order.notes)}</div>` : ''}
+        <div class="receiptList">
+          ${(order.items || []).map(item => `
+            <div class="receiptRow"><span>${item.qty} × ${escapeHtml(item.productName)}${item.variantName ? ` (${escapeHtml(item.variantName)})` : ''}</span><span>${formatMoney(item.lineTotal || 0)}</span></div>
+            ${item.note ? `<div class="receiptMeta" style="margin:-2px 0 6px">${escapeHtml(item.note)}</div>` : ''}
+          `).join('')}
+        </div>
+        <div class="receiptTotals">
+          <div class="receiptRow"><span>Subtotal</span><span>${formatMoney(order.subtotal)}</span></div>
+          <div class="receiptRow"><span>Discount</span><span>-${formatMoney(order.discountAmount || 0)}</span></div>
+          <div class="receiptRow final"><span>Total</span><span>${formatMoney(order.total)}</span></div>
+          <div class="receiptRow"><span>Cash received</span><span>${formatMoney(order.cashReceived || 0)}</span></div>
+          <div class="receiptRow"><span>Change due</span><span>${formatMoney(order.changeDue || 0)}</span></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <button class="mini ghost" onclick="window.print()">Print receipt</button>
+        <button class="mini" onclick="window.__1911.closeModal()">Close</button>
+      </div>
+    `;
+    openModal(`Receipt · ${order.code}`, 'Completed transaction summary.', body, false);
+  }
+
+  function sendCurrentOrderPreview() {
+    const order = currentOrder();
+    if (!order) return;
+    openModal('Order sent', 'The kitchen / bar can prepare the order now.', `
+      <div class="emptyState">
+        ${escapeHtml(order.code)} has been marked as sent.<br><br>
+        This can later be connected to kitchen display or printers.
+      </div>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="mini primary" onclick="window.__1911.markOrderSent()">Mark as sent</button>
+        <button class="mini" onclick="window.__1911.closeModal()">Cancel</button>
+      </div>
+    `, false);
+  }
+
+  function markOrderSent() {
+    const order = currentOrder();
+    if (!order) return;
+    order.status = 'sent';
+    order.sentAt = Date.now();
+    order.updatedAt = Date.now();
+    saveState();
+    renderAll();
+    refreshCurrentOrderWorkspace();
+    closeModal();
+    toast('Order marked as sent.');
+  }
+
+  function openVariantModal(product) {
+    const body = `
+      <div class="adminForm">
+        <div class="subtle" style="margin-bottom:4px">Choose a variant for <strong>${escapeHtml(product.name)}</strong>.</div>
+        <div class="tabs" style="margin-top:0">
+          ${(product.variants || []).map((variant, idx) => `
+            <button class="tab" onclick="window.__1911.addVariant('${product.id}', ${idx})">
+              ${escapeHtml(variant.name)} ${variant.priceDelta ? `(+${formatMoney(variant.priceDelta)})` : ''}
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    openModal('Select Variant', 'Choose the size or variant before adding the item.', body, false);
+  }
+
+  function addVariant(productId, idx) {
+    const product = getProductById(productId);
+    if (!product) return;
+    const variant = product.variants[idx];
+    if (!variant) return;
+    closeModal();
+    addProduct(productId, variant);
+  }
+
+  function openAdmin() {
+    const tabs = ownerTabs();
+    state.adminTab = tabs.includes(state.adminTab) ? state.adminTab : tabs[0];
+    saveState();
+    openModal('Management Dashboard', 'Products, categories, tables, inventory, staff, reports, and settings.', `<div id="adminRoot"></div>`, true);
+    renderAdmin();
+  }
+
+  function ownerTabs() {
+    const tabs = ['products', 'categories', 'tables', 'inventory', 'reports'];
+    if (isOwner()) tabs.push('staff', 'settings');
+    return tabs;
+  }
+
+  function renderAdmin() {
+    const root = $('adminRoot');
+    if (!root) return;
+    const tabs = ownerTabs();
+    if (!tabs.includes(state.adminTab)) state.adminTab = tabs[0];
+    root.innerHTML = `
+      <div class="adminLayout">
+        <div class="adminNav">
+          ${tabs.map(tab => `<button class="adminTab ${state.adminTab === tab ? 'active' : ''}" onclick="window.__1911.setAdminTab('${tab}')">${adminTabLabel(tab)}</button>`).join('')}
+        </div>
+        <div class="adminList" id="adminList"></div>
+        <div class="adminEditor" id="adminEditor"></div>
+      </div>
+    `;
+    renderAdminContent();
+  }
+
+  function adminTabLabel(tab) {
+    return ({
+      products: 'Products',
+      categories: 'Categories',
+      tables: 'Tables',
+      inventory: 'Inventory',
+      reports: 'Reports',
+      staff: 'Staff',
+      settings: 'Settings'
+    })[tab] || tab;
+  }
+
+  function setAdminTab(tab) {
+    state.adminTab = tab;
+    state.adminSelection = null;
+    saveState();
+    renderAdmin();
+  }
+
+  function renderAdminContent() {
+    const list = $('adminList');
+    const editor = $('adminEditor');
+    if (!list || !editor) return;
+    const tab = state.adminTab;
+
+    if (tab === 'products') return renderProductsAdmin(list, editor);
+    if (tab === 'categories') return renderCategoriesAdmin(list, editor);
+    if (tab === 'tables') return renderTablesAdmin(list, editor);
+    if (tab === 'inventory') return renderInventoryAdmin(list, editor);
+    if (tab === 'reports') return renderReportsAdmin(list, editor);
+    if (tab === 'staff') return renderStaffAdmin(list, editor);
+    if (tab === 'settings') return renderSettingsAdmin(list, editor);
+  }
+
+
+  function setAdminProductSearch(value) {
+    state.adminProductSearch = String(value || '');
+    saveState();
+    renderAdminContent();
+  }
+
+  function setAdminCategorySearch(value) {
+    state.adminCategorySearch = String(value || '');
+    saveState();
+    renderAdminContent();
+  }
+
+  function selectAdminProductCategory(categoryId) {
+    state.adminProductCategoryId = categoryId || 'all';
+    state.adminSelection = null;
+    saveState();
+    renderAdminContent();
+  }
+
+  function renderProductsAdmin(list, editor) {
+    const search = String(state.adminProductSearch || '').trim().toLowerCase();
+    const selectedCategoryId = state.adminProductCategoryId || 'all';
+    const categories = [...state.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const products = [...state.products].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    const filteredProducts = products.filter(product => {
+      const hay = `${product.name || ''} ${product.description || ''} ${getCategoryName(product.categoryId)}`.toLowerCase();
+      const matchesSearch = !search || hay.includes(search);
+      const matchesCategory = selectedCategoryId === 'all' || product.categoryId === selectedCategoryId;
+      return matchesSearch && matchesCategory;
+    });
+    const visibleCategories = categories.filter(cat => {
+      if (!search) return true;
+      const catHay = `${cat.name || ''} ${(products.filter(p => p.categoryId === cat.id).map(p => p.name || '').join(' '))}`.toLowerCase();
+      return catHay.includes(search);
+    });
+
+    const selectedLabel = selectedCategoryId === 'all' ? 'All categories' : getCategoryName(selectedCategoryId);
+    const selectedProducts = filteredProducts.filter(p => selectedCategoryId === 'all' || p.categoryId === selectedCategoryId);
+
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Products</h3>
+          <div class="subtle">Browse categories first, then edit the products inside the selected category.</div>
+        </div>
+        <button class="mini primary" onclick="window.__1911.newProduct()">New product</button>
+      </div>
+
+      <div class="toolbar" style="margin-bottom:12px">
+        <input class="input" type="search" placeholder="Search products across all categories..." value="${escapeAttr(state.adminProductSearch || '')}" oninput="window.__1911.setAdminProductSearch(this.value)" />
+      </div>
+
+      <div class="categoryStrip" style="margin-bottom:12px">
+        <button class="categoryChip ${selectedCategoryId === 'all' ? 'active' : ''}" onclick="window.__1911.selectAdminProductCategory('all')">All <span>${products.length}</span></button>
+        ${visibleCategories.map(cat => `
+          <button class="categoryChip ${selectedCategoryId === cat.id ? 'active' : ''}" onclick="window.__1911.selectAdminProductCategory('${cat.id}')">${escapeHtml(cat.name)} <span>${products.filter(p => p.categoryId === cat.id).length}</span></button>
+        `).join('')}
+      </div>
+
+      <div class="adminListHead" style="margin-top:8px">
+        <div>
+          <h3 style="margin:0">Products in ${escapeHtml(selectedLabel)}</h3>
+          <div class="subtle">${selectedProducts.length} product${selectedProducts.length === 1 ? '' : 's'}</div>
+        </div>
+      </div>
+
+      <div class="adminListItems">
+        ${selectedProducts.map((p) => `
+          <div class="adminListItem">
+            <div class="adminListItemTop">
+              <div style="display:flex;gap:10px;align-items:flex-start;min-width:0">
+                <div class="thumb" style="width:42px;height:42px;border-radius:12px;flex:0 0 auto;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)">
+                  ${p.image ? `<img src="${escapeAttr(p.image)}" alt="" style="width:100%;height:100%;object-fit:cover;display:block" />` : '<div style="width:100%;height:100%;display:grid;place-items:center;color:#c9b07a;font-weight:900">1911</div>'}
+                </div>
+                <div style="min-width:0">
+                  <strong>${escapeHtml(p.name || 'Untitled')}</strong>
+                  <div class="subtle">${escapeHtml(getCategoryName(p.categoryId))} · ${formatMoney(p.price || 0)} · ${p.available ? 'Available' : 'Unavailable'}</div>
+                </div>
+              </div>
+              <span class="historyBadge">${(p.variants || []).length ? `${p.variants.length} sizes` : 'Simple'}</span>
+            </div>
+            <div class="adminItemActions">
+              <button class="mini" onclick="window.__1911.editProduct('${p.id}')">Edit</button>
+              <button class="mini danger" onclick="window.__1911.deleteProduct('${p.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('') || '<div class="emptyState">No products match this category or search.</div>'}
+      </div>
+    `;
+
+    editor.innerHTML = productFormHtml(state.adminSelection);
+    wireProductForm(state.adminSelection);
+  }
+
+
+  function productFormHtml(productId) {
+    const product = productId ? getProductById(productId) : null;
+    const selectedCategory = product?.categoryId || (state.adminProductCategoryId && state.adminProductCategoryId !== 'all' ? state.adminProductCategoryId : state.categories[0]?.id || '');
+    const recipeRows = product?.recipe?.length ? product.recipe : [{ inventoryId: '', amount: 1, unit: '' }];
+    return `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">${product ? 'Edit product' : 'New product'}</h3>
+          <div class="subtle">Product image, price, category, availability, variants, and optional inventory recipe.</div>
+        </div>
+      </div>
+      <div class="adminForm" id="productForm">
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Name</div>
+            <input class="input" id="p_name" value="${escapeAttr(product?.name || '')}" />
+          </div>
+          <div class="field">
+            <div class="formLabel">Price</div>
+            <input class="input" id="p_price" type="number" min="0" step="1" value="${Number(product?.price || 0)}" />
+          </div>
+        </div>
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Category</div>
+            <select class="select" id="p_category">
+              ${state.categories.map(c => `<option value="${c.id}" ${selectedCategory === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <div class="formLabel">Image URL</div>
+            <input class="input" id="p_image" value="${escapeAttr(product?.image || '')}" placeholder="Optional image link" />
+          </div>
+        </div>
+        <div class="field">
+          <div class="formLabel">Description</div>
+          <textarea class="textarea" id="p_desc">${escapeHtml(product?.description || '')}</textarea>
+        </div>
+        <div class="checkboxRow">
+          <label><input type="checkbox" id="p_available" ${product?.available !== false ? 'checked' : ''} /> Available</label>
+        </div>
+        <div class="field">
+          <div class="formLabel">Variants</div>
+          <textarea class="textarea" id="p_variants" placeholder="Regular|0&#10;Large|1000">${escapeHtml((product?.variants || []).map(v => `${v.name}|${v.priceDelta || 0}`).join('\n'))}</textarea>
+        </div>
+        <div class="field">
+          <div class="formLabel">Inventory recipe</div>
+          <div class="subtle" style="margin-bottom:8px">Connect product sales to stock items. Each row uses one inventory item per product unit.</div>
+          <div class="recipeRows" id="recipeRows">
+            ${recipeRows.map((row, idx) => recipeRowHtml(row, idx)).join('')}
+          </div>
+          <button class="mini" type="button" onclick="window.__1911.addRecipeRow()">Add ingredient</button>
+        </div>
+        <button class="mini primary" type="button" onclick="window.__1911.saveProduct()">Save product</button>
+        ${product ? `<button class="mini danger" type="button" onclick="window.__1911.deleteProduct('${product.id}')">Delete product</button>` : ''}
+      </div>
+    `;
+    return;
+  }
+
+  function recipeRowHtml(row, index) {
+    return `
+      <div class="recipeRow" data-recipe-index="${index}">
+        <select class="select recipeInv">
+          <option value="">Inventory item</option>
+          ${state.inventory.map(inv => `<option value="${inv.id}" ${row.inventoryId === inv.id ? 'selected' : ''}>${escapeHtml(inv.name)}</option>`).join('')}
+        </select>
+        <input class="input recipeAmt" type="number" min="0" step="0.01" value="${Number(row.amount || 0)}" placeholder="Amount" />
+        <input class="input recipeUnit" value="${escapeAttr(row.unit || '')}" placeholder="Unit" />
+        <button class="mini danger" type="button" onclick="window.__1911.removeRecipeRow(${index})">Remove</button>
+      </div>
+    `;
+  }
+
+  function addRecipeRow() {
+    const container = $('recipeRows');
+    if (!container) return;
+    container.insertAdjacentHTML('beforeend', recipeRowHtml({ inventoryId: '', amount: 1, unit: '' }, container.children.length));
+  }
+
+  function removeRecipeRow(index) {
+    const container = $('recipeRows');
+    if (!container) return;
+    const row = container.querySelector(`[data-recipe-index="${index}"]`);
+    if (row) row.remove();
+  }
+
+  function wireProductForm(existingId) {
+    state.adminSelection = existingId || null;
+  }
+
+  function saveProduct() {
+    const name = $('p_name').value.trim();
+    if (!name) return toast('Product name is required.');
+    const price = Number($('p_price').value || 0);
+    const categoryId = $('p_category').value;
+    const image = $('p_image').value.trim();
+    const description = $('p_desc').value.trim();
+    const available = $('p_available').checked;
+    const variants = String($('p_variants').value || '')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(line => {
+        const [n, d] = line.split('|');
+        return { name: (n || '').trim(), priceDelta: Number(d || 0) };
+      })
+      .filter(v => v.name);
+
+    const recipe = [...$('recipeRows').querySelectorAll('.recipeRow')].map(row => ({
+      inventoryId: row.querySelector('.recipeInv').value,
+      amount: Number(row.querySelector('.recipeAmt').value || 0),
+      unit: row.querySelector('.recipeUnit').value.trim()
+    })).filter(r => r.inventoryId && r.amount > 0);
+
+    for (const step of recipe) {
+      const inv = getInventoryById(step.inventoryId);
+      if (!inv) continue;
+      if (step.unit && !areCompatibleUnits(step.unit, inv.unit)) {
+        toast(`Incompatible recipe unit for ${inv.name}. Use a mass unit with mass or a volume unit with volume.`);
+        return;
+      }
+    }
+
+    if (state.adminSelection) {
+      const existing = getProductById(state.adminSelection);
+      if (existing) {
+        Object.assign(existing, { name, price, categoryId, image, description, available, variants, recipe });
+      }
+    } else {
+      state.products.unshift({ id: uid('prd'), name, price, categoryId, image, description, available, variants, recipe });
+    }
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast('Product saved.');
+  }
+
+  function editProduct(id) {
+    const product = getProductById(id);
+    state.adminSelection = id;
+    state.adminProductCategoryId = product?.categoryId || state.adminProductCategoryId || 'all';
+    renderAdmin();
+  }
+
+  function newProduct() {
+    state.adminSelection = null;
+    renderAdmin();
+  }
+
+  function deleteProduct(id) {
+    const product = getProductById(id);
+    if (!product) return;
+    if (!confirm(`Delete product "${product.name}"?`)) return;
+    state.products = state.products.filter(p => p.id !== id);
+    // remove references from active and historical orders? keep historical snapshots intact
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast('Product deleted.');
+  }
+
+  function moveProduct(id, dir) {
+    const idx = state.products.findIndex(p => p.id === id);
+    if (idx < 0) return;
+    const next = idx + dir;
+    if (next < 0 || next >= state.products.length) return;
+    [state.products[idx], state.products[next]] = [state.products[next], state.products[idx]];
+    saveState();
+    renderAdmin();
+    renderProducts();
+  }
+
+  function renderCategoriesAdmin(list, editor) {
+    const search = String(state.adminCategorySearch || '').trim().toLowerCase();
+    const categories = [...state.categories].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const filtered = categories.filter(cat => {
+      if (!search) return true;
+      const hay = `${cat.name || ''} ${state.products.filter(p => p.categoryId === cat.id).map(p => p.name || '').join(' ')}`.toLowerCase();
+      return hay.includes(search);
+    });
+
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Categories</h3>
+          <div class="subtle">Keep menu sections simple and searchable.</div>
+        </div>
+        <button class="mini primary" onclick="window.__1911.newCategory()">New category</button>
+      </div>
+
+      <div class="toolbar" style="margin-bottom:12px">
+        <input class="input" type="search" placeholder="Search categories..." value="${escapeAttr(state.adminCategorySearch || '')}" oninput="window.__1911.setAdminCategorySearch(this.value)" />
+      </div>
+
+      <div class="adminListItems">
+        ${filtered.map((c, i) => `
+          <div class="adminListItem">
+            <div class="adminListItemTop">
+              <div>
+                <strong>${escapeHtml(c.name)}</strong>
+                <div class="subtle">${c.active !== false ? 'Visible' : 'Hidden'} · ${state.products.filter(p => p.categoryId === c.id).length} product${state.products.filter(p => p.categoryId === c.id).length === 1 ? '' : 's'}</div>
+              </div>
+              <span class="historyBadge">#${i + 1}</span>
+            </div>
+            <div class="adminItemActions">
+              <button class="mini" onclick="window.__1911.editCategory('${c.id}')">Edit</button>
+              <button class="mini danger" onclick="window.__1911.deleteCategory('${c.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('') || '<div class="emptyState">No categories match this search.</div>'}
+      </div>
+    `;
+    editor.innerHTML = categoryFormHtml(state.adminSelection);
+  }
+
+
+  function categoryFormHtml(categoryId) {
+    const cat = categoryId ? state.categories.find(c => c.id === categoryId) : null;
+    return `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">${cat ? 'Edit category' : 'New category'}</h3>
+          <div class="subtle">Owner can create custom menu sections at any time.</div>
+        </div>
+      </div>
+      <div class="adminForm">
+        <div class="field">
+          <div class="formLabel">Category name</div>
+          <input class="input" id="c_name" value="${escapeAttr(cat?.name || '')}" />
+        </div>
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Order</div>
+            <input class="input" id="c_order" type="number" min="1" value="${Number(cat?.order || state.categories.length + 1)}" />
+          </div>
+          <div class="field">
+            <div class="formLabel">Active</div>
+            <select class="select" id="c_active">
+              <option value="true" ${cat?.active !== false ? 'selected' : ''}>Visible</option>
+              <option value="false" ${cat?.active === false ? 'selected' : ''}>Hidden</option>
+            </select>
+          </div>
+        </div>
+        <button class="mini primary" type="button" onclick="window.__1911.saveCategory()">Save category</button>
+        ${cat ? `<button class="mini danger" type="button" onclick="window.__1911.deleteCategory('${cat.id}')">Delete category</button>` : ''}
+      </div>
+    `;
+  }
+
+  function newCategory() {
+    state.adminSelection = null;
+    renderAdmin();
+  }
+
+  function editCategory(id) {
+    state.adminSelection = id;
+    renderAdmin();
+  }
+
+  function saveCategory() {
+    const name = $('c_name').value.trim();
+    if (!name) return toast('Category name is required.');
+    const order = Number($('c_order').value || state.categories.length + 1);
+    const active = $('c_active').value === 'true';
+    if (state.adminSelection) {
+      const existing = state.categories.find(c => c.id === state.adminSelection);
+      if (existing) Object.assign(existing, { name, order, active });
+    } else {
+      state.categories.push({ id: uid('cat'), name, order, active });
+    }
+    state.categories.sort((a,b) => a.order - b.order);
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast('Category saved.');
+  }
+
+  function moveCategory(id, dir) {
+    const idx = state.categories.findIndex(c => c.id === id);
+    const next = idx + dir;
+    if (idx < 0 || next < 0 || next >= state.categories.length) return;
+    [state.categories[idx], state.categories[next]] = [state.categories[next], state.categories[idx]];
+    state.categories.forEach((c, i) => c.order = i + 1);
+    saveState();
+    renderAdmin();
+    renderCategories();
+  }
+
+  function deleteCategory(id) {
+    const cat = state.categories.find(c => c.id === id);
+    if (!cat) return;
+    if (state.products.some(p => p.categoryId === id)) {
+      toast('Move products out of this category before deleting.');
+      return;
+    }
+    if (!confirm(`Delete category "${cat.name}"?`)) return;
+    state.categories = state.categories.filter(c => c.id !== id);
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+  }
+
+  function renderTablesAdmin(list, editor) {
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Tables</h3>
+          <div class="subtle">Rename dining tables. The count updates automatically from the table records.</div>
+        </div>
+        <button class="mini primary" onclick="window.__1911.addTable()">New table</button>
+      </div>
+      <div class="adminListItems">
+        ${state.tables.map((t, i) => `
+          <div class="adminListItem">
+            <div class="adminListItemTop">
+              <div>
+                <strong>${escapeHtml(t.label)}</strong>
+                <div class="subtle">${t.orderId ? 'Occupied' : 'Available'} · ${t.lastClosedAt ? `Closed ${formatShortDate(t.lastClosedAt)}` : 'Open'}</div>
+              </div>
+              <span class="historyBadge">#${i + 1}</span>
+            </div>
+            <div class="adminItemActions">
+              <button class="mini" onclick="window.__1911.editTable('${t.id}')">Edit</button>
+              <button class="mini danger" onclick="window.__1911.deleteTable('${t.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    editor.innerHTML = tableFormHtml(state.adminSelection);
+  }
+
+
+  function tableFormHtml(tableId) {
+    const t = tableId ? getTableById(tableId) : null;
+    return `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">${t ? 'Edit table' : 'New table'}</h3>
+          <div class="subtle">Create or rename a dining table.</div>
+        </div>
+      </div>
+      <div class="adminForm">
+        <div class="field">
+          <div class="formLabel">Table name</div>
+          <input class="input" id="t_label" value="${escapeAttr(t?.label || `Table ${String(state.tables.length + 1).padStart(2, '0')}`)}" />
+        </div>
+        <button class="mini primary" type="button" onclick="window.__1911.saveTable()">Save table</button>
+        ${t ? `<button class="mini danger" type="button" onclick="window.__1911.deleteTable('${t.id}')">Delete table</button>` : ''}
+      </div>
+    `;
+  }
+
+
+  function addTable() {
+    state.adminSelection = null;
+    renderAdmin();
+  }
+
+  function editTable(id) {
+    state.adminSelection = id;
+    renderAdmin();
+  }
+
+  function saveTable() {
+    const label = $('t_label').value.trim();
+    if (!label) return toast('Table name is required.');
+    if (state.adminSelection) {
+      const t = getTableById(state.adminSelection);
+      if (t) t.label = label;
+    } else {
+      state.tables.push({
+        id: uid('tbl'),
+        number: state.tables.length + 1,
+        label,
+        orderId: null,
+        lastClosedAt: null
+      });
+    }
+    state.tables.sort((a, b) => (a.number || 0) - (b.number || 0));
+    state.tables.forEach((t, i) => {
+      t.number = i + 1;
+      if (!t.label) t.label = `Table ${String(i + 1).padStart(2, '0')}`;
+    });
+    state.settings.tableCount = state.tables.length;
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast('Table saved.');
+  }
+
+
+  function deleteTable(id) {
+    const t = getTableById(id);
+    if (!t) return;
+    if (t.orderId) {
+      toast('Close active order before deleting the table.');
+      return;
+    }
+    if (!confirm(`Delete ${t.label}?`)) return;
+    state.tables = state.tables.filter(x => x.id !== id);
+    state.tables.forEach((x, i) => x.number = i + 1);
+    state.settings.tableCount = state.tables.length;
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+  }
+
+
+  function syncTablesToCount() {
+    const count = Math.max(1, Number(state.settings.tableCount || state.tables.length));
+    while (state.tables.length < count) {
+      state.tables.push({ id: uid('tbl'), number: state.tables.length + 1, label: `Table ${String(state.tables.length + 1).padStart(2, '0')}`, orderId: null, lastClosedAt: null });
+    }
+    while (state.tables.length > count) {
+      const last = state.tables[state.tables.length - 1];
+      if (last && !last.orderId) state.tables.pop();
+      else break;
+    }
+    state.tables.forEach((t, i) => t.number = i + 1);
+  }
+
+  function renderInventoryAdmin(list, editor) {
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Inventory</h3>
+          <div class="subtle">Track ingredients, supplier notes, and low stock items.</div>
+        </div>
+        <button class="mini primary" onclick="window.__1911.newInventory()">New</button>
+      </div>
+      <div class="adminListItems">
+        ${state.inventory.map(inv => `
+          <div class="adminListItem">
+            <div class="adminListItemTop">
+              <div>
+                <strong>${escapeHtml(inv.name)}</strong>
+                <div class="subtle">${formatInventoryQty(inv.qty, inv.unit)} ${escapeHtml(inv.unit)} · Low at ${formatInventoryQty(inv.threshold || 0, inv.unit)} ${escapeHtml(inv.unit)}</div>
+              </div>
+              <span class="historyBadge">${inv.active !== false ? 'Active' : 'Inactive'}</span>
+            </div>
+            <div class="adminItemActions">
+              <button class="mini" onclick="window.__1911.editInventory('${inv.id}')">Edit</button>
+              <button class="mini danger" onclick="window.__1911.deleteInventory('${inv.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    editor.innerHTML = inventoryFormHtml(state.adminSelection);
+  }
+
+  function inventoryFormHtml(id) {
+    const inv = id ? getInventoryById(id) : null;
+    return `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">${inv ? 'Edit inventory' : 'New inventory item'}</h3>
+          <div class="subtle">Optional stock control for drinks and kitchen items.</div>
+        </div>
+      </div>
+      <div class="adminForm">
+        <div class="field">
+          <div class="formLabel">Name</div>
+          <input class="input" id="inv_name" value="${escapeAttr(inv?.name || '')}" />
+        </div>
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Quantity</div>
+            <input class="input" id="inv_qty" type="number" step="0.01" value="${Number(inv?.qty || 0)}" />
+          </div>
+          <div class="field">
+            <div class="formLabel">Unit</div>
+            <input class="input" id="inv_unit" value="${escapeAttr(inv?.unit || '')}" placeholder="kg, L, pcs..." />
+          </div>
+        </div>
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Threshold</div>
+            <input class="input" id="inv_threshold" type="number" step="0.01" value="${Number(inv?.threshold || 0)}" />
+          </div>
+          <div class="field">
+            <div class="formLabel">Supplier</div>
+            <input class="input" id="inv_supplier" value="${escapeAttr(inv?.supplier || '')}" />
+          </div>
+        </div>
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">Cost</div>
+            <input class="input" id="inv_cost" type="number" step="0.01" value="${Number(inv?.cost || 0)}" />
+          </div>
+          <div class="field">
+            <div class="formLabel">Active</div>
+            <select class="select" id="inv_active">
+              <option value="true" ${inv?.active !== false ? 'selected' : ''}>Active</option>
+              <option value="false" ${inv?.active === false ? 'selected' : ''}>Inactive</option>
+            </select>
+          </div>
+        </div>
+        <button class="mini primary" type="button" onclick="window.__1911.saveInventory()">Save inventory</button>
+        ${inv ? `<button class="mini danger" type="button" onclick="window.__1911.deleteInventory('${inv.id}')">Delete inventory</button>` : ''}
+      </div>
+    `;
+  }
+
+  function getInventoryById(id) {
+    return state.inventory.find(i => i.id === id) || null;
+  }
+
+  function newInventory() { state.adminSelection = null; renderAdmin(); }
+  function editInventory(id) { state.adminSelection = id; renderAdmin(); }
+  function saveInventory() {
+    const name = $('inv_name').value.trim();
+    if (!name) return toast('Inventory name is required.');
+    const payload = {
+      name,
+      qty: Number($('inv_qty').value || 0),
+      unit: $('inv_unit').value.trim(),
+      threshold: Number($('inv_threshold').value || 0),
+      supplier: $('inv_supplier').value.trim(),
+      cost: Number($('inv_cost').value || 0),
+      active: $('inv_active').value === 'true'
+    };
+    if (state.adminSelection) {
+      const inv = getInventoryById(state.adminSelection);
+      if (inv) Object.assign(inv, payload);
+    } else {
+      state.inventory.unshift({ id: uid('inv'), ...payload });
+    }
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast('Inventory saved.');
+  }
+  function deleteInventory(id) {
+    const inv = getInventoryById(id);
+    if (!inv) return;
+    if (state.products.some(p => (p.recipe || []).some(r => r.inventoryId === id))) {
+      toast('Remove this inventory item from product recipes first.');
+      return;
+    }
+    if (!confirm(`Delete inventory item "${inv.name}"?`)) return;
+    state.inventory = state.inventory.filter(i => i.id !== id);
+    state.adminSelection = null;
+    saveState();
+    renderAll();
+    renderAdmin();
+  }
+
+  function getReportRangeOrders(mode, ref) {
+    const orders = state.orders.slice().sort((a, b) => (b.paidAt || b.createdAt) - (a.paidAt || a.createdAt));
+    const d = ref ? new Date(ref) : new Date();
+    if (mode === 'today' || mode === 'date') {
+      const start = startOfDay(d);
+      const end = start + 86400000;
+      return orders.filter(o => {
+        const ts = o.paidAt || o.createdAt;
+        return ts >= start && ts < end;
+      });
+    }
+    if (mode === 'week') {
+      const start = startOfWeek(d);
+      const end = start + 7 * 86400000;
+      return orders.filter(o => {
+        const ts = o.paidAt || o.createdAt;
+        return ts >= start && ts < end;
+      });
+    }
+    if (mode === 'month') {
+      const start = startOfMonth(d);
+      const end = new Date(d.getFullYear(), d.getMonth() + 1, 1).getTime();
+      return orders.filter(o => {
+        const ts = o.paidAt || o.createdAt;
+        return ts >= start && ts < end;
+      });
+    }
+    return orders;
+  }
+
+  function reportLabel(mode, ref) {
+    const d = ref ? new Date(ref) : new Date();
+    if (mode === 'week') {
+      const s = new Date(startOfWeek(d));
+      const e = new Date(s.getTime() + 6 * 86400000);
+      return `${s.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${e.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    }
+    if (mode === 'month') return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function setReportMode(mode) {
+    state.reportMode = mode;
+    saveState();
+    renderAdmin();
+  }
+
+  function setReportDate(value) {
+    if (!value) return;
+    state.reportDate = value;
+    state.reportMode = 'date';
+    saveState();
+    renderAdmin();
+  }
+
+  function setReportMonth(value) {
+    if (!value) return;
+    state.reportMonth = value;
+    state.reportMode = 'month';
+    saveState();
+    renderAdmin();
+  }
+
+  function shiftReportDate(delta) {
+    const d = new Date(state.reportDate || new Date().toISOString().slice(0, 10));
+    d.setDate(d.getDate() + delta);
+    state.reportDate = d.toISOString().slice(0, 10);
+    state.reportMode = 'date';
+    saveState();
+    renderAdmin();
+  }
+
+  function shiftReportWeek(delta) {
+    const d = new Date(state.reportDate || new Date().toISOString().slice(0, 10));
+    d.setDate(d.getDate() + delta);
+    state.reportDate = d.toISOString().slice(0, 10);
+    state.reportMode = 'week';
+    saveState();
+    renderAdmin();
+  }
+
+  function shiftReportMonth(delta) {
+    const d = new Date((state.reportMonth || new Date().toISOString().slice(0, 7)) + '-01T00:00:00');
+    d.setMonth(d.getMonth() + delta);
+    state.reportMonth = d.toISOString().slice(0, 7);
+    state.reportMode = 'month';
+    saveState();
+    renderAdmin();
+  }
+
+  function openReportOrders() {
+    const mode = state.reportMode || 'today';
+    const ref = mode === 'week' ? (state.reportDate || new Date().toISOString().slice(0, 10)) : mode === 'month' ? ((state.reportMonth || new Date().toISOString().slice(0, 7)) + '-01') : (state.reportDate || new Date().toISOString().slice(0, 10));
+    const orders = getReportRangeOrders(mode, ref);
+    const body = `<div class="historyList">${orders.length ? orders.map(order => renderHistoryCard(order)).join('') : '<div class="emptyState">No orders in this range.</div>'}</div>`;
+    openModal('Report details', 'Orders in the selected period.', body, true);
+  }
+
+
+  function renderReportsAdmin(list, editor) {
+    const mode = state.reportMode || 'today';
+    const ref = mode === 'month' ? ((state.reportMonth || new Date().toISOString().slice(0, 7)) + '-01') : (state.reportDate || new Date().toISOString().slice(0, 10));
+    const orders = getReportRangeOrders(mode, ref);
+    const total = sumOrders(orders);
+    const avg = orders.length ? total / orders.length : 0;
+    const topProducts = getTopProducts(orders).slice(0, 5);
+    const topCategories = getTopCategories(orders).slice(0, 5);
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Reports</h3>
+          <div class="subtle">Use the same completed-order data as history, with quick period navigation.</div>
+        </div>
+      </div>
+      <div class="toolbar" style="margin-bottom:12px">
+        <button class="mini ${mode === 'today' ? 'primary' : ''}" onclick="window.__1911.setReportMode('today')">Today</button>
+        <button class="mini ${mode === 'date' ? 'primary' : ''}" onclick="window.__1911.setReportMode('date')">Date</button>
+        <button class="mini ${mode === 'week' ? 'primary' : ''}" onclick="window.__1911.setReportMode('week')">Week</button>
+        <button class="mini ${mode === 'month' ? 'primary' : ''}" onclick="window.__1911.setReportMode('month')">Month</button>
+      </div>
+      <div class="reportGrid">
+        <button class="reportCard" onclick="window.__1911.openReportOrders()"><span class="statLabel">Selected period</span><b>${escapeHtml(reportLabel(mode, ref))}</b></button>
+        <button class="reportCard" onclick="window.__1911.openReportOrders()"><span class="statLabel">Revenue</span><b>${formatMoney(total)}</b></button>
+        <button class="reportCard" onclick="window.__1911.openReportOrders()"><span class="statLabel">Orders</span><b>${orders.length}</b></button>
+        <button class="reportCard" onclick="window.__1911.openReportOrders()"><span class="statLabel">Average order</span><b>${formatMoney(avg)}</b></button>
+      </div>
+      <div class="reportGrid" style="margin-top:10px">
+        <button class="reportCard" onclick="window.__1911.openReportOrders()"><span class="statLabel">Top product</span><b>${topProducts[0] ? escapeHtml(topProducts[0].name) : '—'}</b></button>
+        <button class="reportCard" onclick="window.__1911.openReportOrders()"><span class="statLabel">Top category</span><b>${topCategories[0] ? escapeHtml(topCategories[0].name) : '—'}</b></button>
+      </div>
+    `;
+    editor.innerHTML = `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">Orders in range</h3>
+          <div class="subtle">${orders.length} order${orders.length === 1 ? '' : 's'} in the selected period.</div>
+        </div>
+        <div class="adminItemActions">
+          ${mode === 'today' || mode === 'date' ? '<button class="mini" onclick="window.__1911.shiftReportDate(-1)">←</button><button class="mini" onclick="window.__1911.shiftReportDate(1)">→</button>' : ''}
+          ${mode === 'week' ? '<button class="mini" onclick="window.__1911.shiftReportWeek(-7)">←</button><button class="mini" onclick="window.__1911.shiftReportWeek(7)">→</button>' : ''}
+          ${mode === 'month' ? '<button class="mini" onclick="window.__1911.shiftReportMonth(-1)">←</button><button class="mini" onclick="window.__1911.shiftReportMonth(1)">→</button>' : ''}
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <div class="formLabel">Choose a date or month</div>
+        ${mode === 'month' ? `
+          <input class="input" type="month" value="${escapeHtml(state.reportMonth || new Date().toISOString().slice(0,7))}" onchange="window.__1911.setReportMonth(this.value)" />
+        ` : `
+          <input class="input" type="date" value="${escapeHtml(state.reportDate || new Date().toISOString().slice(0,10))}" onchange="window.__1911.setReportDate(this.value)" />
+        `}
+      </div>
+      <div class="historyList">${orders.length ? orders.map(order => renderHistoryCard(order)).join('') : '<div class="emptyState">No orders in this range.</div>'}</div>
+    `;
+  }
+
+
+  function renderStaffAdmin(list, editor) {
+
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Staff</h3>
+          <div class="subtle">Owner and cashier access control.</div>
+        </div>
+        <button class="mini primary" onclick="window.__1911.newStaff()">New</button>
+      </div>
+      <div class="adminListItems">
+        ${state.staff.map(st => `
+          <div class="adminListItem">
+            <div class="adminListItemTop">
+              <div>
+                <strong>${escapeHtml(st.name)}</strong>
+                <div class="subtle">${st.role}</div>
+              </div>
+              <span class="historyBadge">${st.active !== false ? 'Active' : 'Inactive'}</span>
+            </div>
+            <div class="adminItemActions">
+              <button class="mini" onclick="window.__1911.switchStaff('${st.id}')">Switch</button>
+              <button class="mini" onclick="window.__1911.editStaff('${st.id}')">Edit</button>
+              <button class="mini danger" onclick="window.__1911.deleteStaff('${st.id}')">Delete</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    editor.innerHTML = staffFormHtml(state.adminSelection);
+  }
+
+  function staffFormHtml(id) {
+    const st = id ? state.staff.find(s => s.id === id) : null;
+    return `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">${st ? 'Edit staff' : 'New staff member'}</h3>
+          <div class="subtle">Choose owner or cashier role.</div>
+        </div>
+      </div>
+      <div class="adminForm">
+        <div class="field">
+          <div class="formLabel">Name</div>
+          <input class="input" id="s_name" value="${escapeAttr(st?.name || '')}" />
+        </div>
+        <div class="formRow">
+          <div class="field">
+            <div class="formLabel">PIN</div>
+            <input class="input" id="s_pin" value="${escapeAttr(st?.pin || '')}" />
+          </div>
+          <div class="field">
+            <div class="formLabel">Role</div>
+            <select class="select" id="s_role">
+              <option value="OWNER" ${st?.role === 'OWNER' ? 'selected' : ''}>OWNER</option>
+              <option value="STAFF" ${st?.role === 'STAFF' ? 'selected' : ''}>STAFF</option>
+            </select>
+          </div>
+        </div>
+        <div class="checkboxRow">
+          <label><input type="checkbox" id="s_active" ${st?.active !== false ? 'checked' : ''} /> Active</label>
+        </div>
+        <button class="mini primary" type="button" onclick="window.__1911.saveStaff()">Save staff</button>
+        ${st ? `<button class="mini danger" type="button" onclick="window.__1911.deleteStaff('${st.id}')">Delete staff</button>` : ''}
+      </div>
+    `;
+  }
+
+  function newStaff() { state.adminSelection = null; renderAdmin(); }
+  function editStaff(id) { state.adminSelection = id; renderAdmin(); }
+  function saveStaff() {
+    const name = $('s_name').value.trim();
+    const pin = $('s_pin').value.trim();
+    const role = $('s_role').value;
+    if (!name || !pin) return toast('Name and PIN are required.');
+    const payload = { name, pin, role, active: $('s_active').checked };
+    if (state.adminSelection) {
+      const st = state.staff.find(s => s.id === state.adminSelection);
+      if (st) Object.assign(st, payload);
+    } else {
+      state.staff.push({ id: uid('usr'), ...payload });
+    }
+    state.adminSelection = null;
+    saveState();
+    ensureCurrentStaff();
+    renderAll();
+    renderAdmin();
+    toast('Staff saved.');
+  }
+
+  function deleteStaff(id) {
+    const st = state.staff.find(s => s.id === id);
+    if (!st) return;
+    if (state.staff.length === 1) return toast('At least one staff member is required.');
+    if (!confirm(`Delete staff member "${st.name}"?`)) return;
+    state.staff = state.staff.filter(s => s.id !== id);
+    if (state.currentStaffId === id) state.currentStaffId = state.staff[0].id;
+    state.adminSelection = null;
+    ensureCurrentStaff();
+    saveState();
+    renderAll();
+    renderAdmin();
+  }
+
+  function switchStaff(id) {
+    const st = state.staff.find(s => s.id === id);
+    if (!st) return;
+    const pin = prompt(`Enter PIN for ${st.name}:`, '');
+    if (pin === null) return;
+    if (String(pin) !== String(st.pin)) {
+      toast('Wrong PIN.');
+      return;
+    }
+    state.currentStaffId = st.id;
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast(`Switched to ${st.name}.`);
+  }
+
+function openStaffSwitcher() {
+  const currentId = state.currentStaffId || state.staff[0]?.id || '';
+  const body = `
+    <div class="adminForm" style="gap:12px">
+      <div class="field">
+        <div class="formLabel">Current cashier</div>
+        <select class="select" id="shiftCurrentStaff">
+          ${state.staff.map(st => `<option value="${escapeAttr(st.id)}" ${st.id === currentId ? 'selected' : ''}>${escapeHtml(st.name)} · ${escapeHtml(st.role)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <div class="formLabel">On duty staff</div>
+        <div class="adminListItems" style="padding:0">
+          ${state.staff.map(st => `
+            <label class="adminListItem" style="cursor:pointer">
+              <div class="adminListItemTop">
+                <div>
+                  <strong>${escapeHtml(st.name)}</strong>
+                  <div class="subtle">${escapeHtml(st.role)}</div>
+                </div>
+                <input type="checkbox" ${st.active !== false ? 'checked' : ''} data-duty-id="${escapeAttr(st.id)}" />
+              </div>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+      <button class="mini primary" onclick="window.__1911.saveShiftDuty()">Save shift</button>
+    </div>
+  `;
+  openModal('Staff duty', `SHIFT: ${escapeHtml(state.settings.shiftLabel || '5:00 PM – 2:00 AM')}`, body, true);
+}
+
+function saveShiftDuty() {
+  const selectedId = $('shiftCurrentStaff')?.value || state.currentStaffId || state.staff[0]?.id || null;
+  const dutyIds = Array.from(document.querySelectorAll('[data-duty-id]'))
+    .filter(el => el.checked)
+    .map(el => el.getAttribute('data-duty-id'))
+    .filter(Boolean);
+  state.staff = state.staff.map(st => ({ ...st, active: dutyIds.includes(st.id) }));
+  if (!state.staff.some(st => st.active !== false)) {
+    const fallback = state.staff.find(st => st.id === selectedId) || state.staff[0];
+    if (fallback) fallback.active = true;
+  }
+  if (selectedId && state.staff.some(st => st.id === selectedId)) {
+    state.currentStaffId = selectedId;
+    const current = state.staff.find(st => st.id === selectedId);
+    if (current) current.active = true;
+  }
+  saveState();
+  renderAll();
+  closeModal();
+  toast('Shift updated.');
+}
+
+function quickSwitchStaff(id) {
+    const st = state.staff.find(s => s.id === id);
+    if (!st) return;
+    const pin = prompt(`Enter PIN for ${st.name}:`, '');
+    if (pin === null) return;
+    if (String(pin) !== String(st.pin)) return toast('Wrong PIN.');
+    state.currentStaffId = st.id;
+    saveState();
+    renderAll();
+    closeModal();
+    toast(`Welcome, ${st.name}.`);
+  }
+
+  function renderSettingsAdmin(list, editor) {
+    list.innerHTML = `
+      <div class="adminListHead">
+        <div>
+          <h3 style="margin:0">Settings</h3>
+          <div class="subtle">Brand, payment methods, and display preferences.</div>
+        </div>
+      </div>
+      <div class="reportGrid">
+        <div class="reportCard"><span class="statLabel">Brand</span><b>${escapeHtml(state.settings.brandName)}</b></div>
+        <div class="reportCard"><span class="statLabel">Tables</span><b>${state.tables.length}</b></div>
+      </div>
+    `;
+    editor.innerHTML = `
+      <div class="adminEditorHead">
+        <div>
+          <h3 style="margin:0">Brand &amp; system settings</h3>
+          <div class="subtle">Change the visible identity and core app preferences.</div>
+        </div>
+      </div>
+      <div class="adminForm">
+        <div class="field">
+          <div class="formLabel">Brand name</div>
+          <input class="input" id="set_brand" value="${escapeAttr(state.settings.brandName || '1911')}" />
+        </div>
+        <div class="field">
+          <div class="formLabel">Tables</div>
+          <input class="input" value="${state.tables.length}" disabled />
+        </div>
+        <div class="field">
+          <div class="formLabel">Currency</div>
+          <input class="input" id="set_currency" value="${escapeAttr(state.settings.currency || 'IQD')}" />
+        </div>
+        <div class="field">
+          <div class="formLabel">Payment methods (one per line)</div>
+          <textarea class="textarea" id="set_payments">${escapeHtml((state.settings.paymentMethods || []).join('\n'))}</textarea>
+        </div>
+        <div class="checkboxRow">
+          <label><input type="checkbox" id="set_lowstock" ${state.settings.lowStockAlerts ? 'checked' : ''} /> Low-stock warnings</label>
+        </div>
+        <button class="mini primary" type="button" onclick="window.__1911.saveSettings()">Save settings</button>
+      </div>
+    `;
+  }
+
+
+  function saveSettings() {
+    state.settings.brandName = $('set_brand').value.trim() || '1911';
+    state.settings.tableCount = state.tables.length;
+    state.settings.currency = $('set_currency').value.trim() || 'IQD';
+    state.settings.paymentMethods = String($('set_payments').value || '')
+      .split('\n')
+      .map(v => v.trim())
+      .filter(Boolean);
+    if (!state.settings.paymentMethods.length) state.settings.paymentMethods = ['Cash', 'Card', 'Other'];
+    state.settings.lowStockAlerts = $('set_lowstock').checked;
+    saveState();
+    renderAll();
+    renderAdmin();
+    toast('Settings saved.');
+  }
+
+
+  function moveProductHandler(){}
+
+  function newProductHandler(){}
+  function newCategoryHandler(){}
+  function newInventoryHandler(){}
+  function newStaffHandler(){}
+  function addRecipeRowHandler(){}
+  function removeRecipeRowHandler(){}
+
+  function openModal(title, subtitle, body, allowClose = true) {
+    $('modalTitle').textContent = title;
+    $('modalSubtitle').textContent = subtitle || '';
+    $('modalBody').innerHTML = body;
+    $('modal').classList.add('open');
+    if (!allowClose) {
+      $('modalCloseButton').style.display = 'inline-grid';
+    } else {
+      $('modalCloseButton').style.display = 'inline-grid';
+    }
+  }
+
+  function closeModal() {
+    $('modal').classList.remove('open');
+    $('modalBody').innerHTML = '';
+    $('modalTitle').textContent = 'Modal';
+    $('modalSubtitle').textContent = '';
+    state.checkoutDraft = null;
+    saveState();
+  }
+
+  function toast(message) {
+    const el = $('toast');
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function escapeAttr(str) {
+    return escapeHtml(str).replace(/`/g, '&#96;');
+  }
+
+  function scheduleRolloverSafeSave() {
+    setInterval(() => {
+      saveState();
+      renderStats();
+      renderQuickReports();
+      renderOrderPanel();
+      renderHistory();
+    }, 30000);
+  }
+
+  // Expose controlled API for inline handlers
+  window.__1911 = {
+    selectTable,
+    selectCategory,
+    addProduct,
+    increaseItem,
+    decreaseItem,
+    removeItem,
+    editItemNote,
+    addVariant,
+    closeModal,
+    openReceipt,
+    newProduct,
+    editProduct,
+    deleteProduct,
+    moveProduct,
+    saveProduct,
+    addRecipeRow,
+    removeRecipeRow,
+    newCategory,
+    editCategory,
+    saveCategory,
+    deleteCategory,
+    moveCategory,
+    addTable,
+    editTable,
+    saveTable,
+    deleteTable,
+    newInventory,
+    editInventory,
+    saveInventory,
+    deleteInventory,
+    newStaff,
+    editStaff,
+    saveStaff,
+    deleteStaff,
+    switchStaff,
+    quickSwitchStaff,
+    setAdminTab,
+    setAdminProductSearch,
+    setAdminCategorySearch,
+    selectAdminProductCategory,
+    saveSettings,
+    markOrderSent,
+    openAdmin,
+    openStaffSwitcher,
+    closeCurrentOrder
+  };
+
+  // map missing functions to stateful actions
+  window.__1911.addRecipeRow = () => {
+    const holder = $('recipeRows');
+    if (!holder) return;
+    const idx = holder.querySelectorAll('.recipeRow').length;
+    holder.insertAdjacentHTML('beforeend', recipeRowHtml({ inventoryId: '', amount: 1, unit: '' }, idx));
+  };
+  window.__1911.removeRecipeRow = (idx) => {
+    const row = $('recipeRows')?.querySelector(`[data-recipe-index="${idx}"]`);
+    if (row) row.remove();
+  };
+  window.__1911.setAdminTab = setAdminTab;
+  window.__1911.openReceipt = openReceipt;
+  window.__1911.closeModal = closeModal;
+  window.__1911.markOrderSent = markOrderSent;
+  window.__1911.addVariant = addVariant;
+  window.__1911.selectCategory = selectCategory;
+  window.__1911.selectTable = selectTable;
+  window.__1911.addProduct = addProduct;
+  window.__1911.increaseItem = increaseItem;
+  window.__1911.decreaseItem = decreaseItem;
+  window.__1911.removeItem = removeItem;
+  window.__1911.editItemNote = editItemNote;
+  window.__1911.sendCurrentOrderPreview = sendCurrentOrderPreview;
+
+  // Because some buttons inside the modal use inline handlers
+  window.openAdmin = openAdmin;
+
+  function openDiscountModalFallback() {}
+  function openCheckoutModalFallback() {}
+
+  // Ensure initial data consistency and show the starting order if present
+  if (state.currentOrderId && !getOrderById(state.currentOrderId)) {
+    state.currentOrderId = state.activeOrders[0]?.id || null;
+  }
+  saveState();
+  renderAll();
+
+  // Re-render time-sensitive UI
+  setInterval(() => {
+    renderTables();
+    renderOrderPanel();
+    renderQuickReports();
+    renderHeaderState();
+    renderHistory();
+  }, 15000);
+
+  // Selected initial order if available
+  if (!state.currentOrderId && state.activeOrders[0]) state.currentOrderId = state.activeOrders[0].id;
+
+  // Patch button handlers that need state access
+  $('sendOrderButton').onclick = () => {
+    const order = currentOrder();
+    if (!order) return;
+    order.status = 'sent';
+    order.sentAt = Date.now();
+    order.updatedAt = Date.now();
+    saveState();
+    renderAll();
+    toast('Order sent.');
+  };
+  $('discountButton').onclick = openDiscountModal;
+  $('checkoutButton').onclick = openCheckoutModal;
+  $('closeOrderButton').onclick = closeCurrentOrder;
+
+  // Fix order item list and product search on initial load
+  renderAll();
+
+
+
+
+  // -------------------------------------------------
+  // 1911 UX simplification overrides
+  // Main screen = tables only
+  // Table flow = open table -> add item -> save order -> pay/close
+  // -------------------------------------------------
+  state.modalContext = state.modalContext || null;
+  state.activeTableFlowId = state.activeTableFlowId || null;
+  state.orderEditMode = state.orderEditMode || false;
+  state.flowStage = state.flowStage || 'order';
+
+  const legacyCloseModal = closeModal;
+  const legacyIncreaseItem = increaseItem;
+  const legacyDecreaseItem = decreaseItem;
+  const legacyRemoveItem = removeItem;
+  const legacyEditItemNote = editItemNote;
+
+  function getFlowTableId() {
+    return state.activeTableFlowId || state.pendingTableId || currentOrder()?.tableId || null;
+  }
+
+  function refreshTableFlowIfOpen() {
+    const tableId = getFlowTableId();
+    if (!tableId) return;
+    if (state.modalContext === 'table-flow') {
+      if (state.flowStage === 'picker') {
+        openProductPicker(tableId);
+      } else {
+        openTableOrderModal(tableId);
+      }
+    }
+  }
+
+  function tableLabelFor(table) {
+    if (!table) return 'TABLE';
+    return table.label || `Table ${String(table.number || '').padStart(2, '0')}`;
+  }
+
+  function openTableOrderModal(tableId) {
+    const table = getTableById(tableId);
+    if (!table) return;
+    const order = getActiveOrderByTableId(tableId);
+    state.modalContext = 'table-flow';
+    state.flowStage = 'order';
+    state.activeTableFlowId = tableId;
+    state.pendingTableId = tableId;
+    state.orderEditMode = false;
+    if (order) state.currentOrderId = order.id;
+    saveState();
+
+    const itemCount = order?.itemCount || 0;
+    const total = order?.total || 0;
+    const subtitle = order
+      ? `${itemCount} item${itemCount === 1 ? '' : 's'} · ${formatMoney(total)}`
+      : 'No items yet. Add an item to start the order.';
+
+    const body = renderTableFlowBody(tableId);
+    openModal(tableLabelFor(table), subtitle, body, true);
+  }
+
+  function renderTableFlowBody(tableId) {
+    const order = getActiveOrderByTableId(tableId);
+    return renderOrderWorkspace(order?.id || null, 'table');
+  }
+
+  function toggleTableEditMode() {
+    state.orderEditMode = !state.orderEditMode;
+    saveState();
+    refreshTableFlowIfOpen();
+  }
+
+  function closeOrderToCheckout() {
+    const order = currentOrder();
+    if (!order || !order.items || !order.items.length) {
+      closeTableFlowModal();
+      return;
+    }
+    state.currentOrderId = order.id;
+    saveState();
+    openCheckoutModal(order.id);
+  }
+
+  function payOrCloseTable(tableId) {
+    return closeOrderToCheckout(tableId);
+  }
+
+  function openProductPicker(tableId = null) {
+    const table = tableId ? getTableById(tableId) : null;
+    const isTableFlow = !!table;
+    state.modalContext = isTableFlow ? 'table-flow' : 'takeaway-flow';
+    state.flowStage = 'picker';
+    state.activeTableFlowId = tableId || null;
+    state.pendingTableId = tableId || null;
+    saveState();
+
+    const activeId = state.activeCategoryId || 'all';
+    const search = (state.searchProducts || '').trim().toLowerCase();
+    const categories = [{ id: 'all', name: 'All' }].concat(state.categories.slice().sort((a, b) => a.order - b.order).filter(c => c.active !== false));
+    const products = state.products
+      .filter(p => activeId === 'all' ? true : p.categoryId === activeId)
+      .filter(p => {
+        if (!search) return true;
+        const hay = [p.name, p.description, getCategoryForProduct(p)?.name || ''].join(' ').toLowerCase();
+        return hay.includes(search);
+      });
+
+    const backAction = tableId ? `window.__1911.openTableOrderModal('${tableId}')` : 'window.__1911.openTakeawayFlow()';
+    const body = `
+      <div class="adminForm" style="gap:12px">
+        <div class="toolbar" style="margin:0">
+          <input class="input" id="pickerSearch" type="search" placeholder="Search products..." value="${escapeAttr(state.searchProducts || '')}" oninput="window.__1911.setPickerSearch(this.value)" />
+          <button class="mini ghost" onclick="${backAction}">⬅ Back</button>
+        </div>
+        <div class="tabs" id="pickerCategoryTabs">
+          ${categories.map(cat => `<button class="tab ${activeId === cat.id ? 'active' : ''}" onclick="window.__1911.setPickerCategory('${cat.id}')">${escapeHtml(cat.name)}</button>`).join('')}
+        </div>
+        <div class="menuGrid" id="pickerProductsGrid">
+          ${products.length ? products.map(p => {
+            const catName = getCategoryForProduct(p)?.name || 'Uncategorized';
+            const img = p.image?.trim() || '';
+            const fallback = escapeHtml((p.name || 'P').slice(0, 1).toUpperCase());
+            const available = p.available !== false;
+            return `
+              <button class="productCard" ${available ? `onclick="window.__1911.addProduct('${p.id}')"` : 'disabled'}>
+                <div class="productImage">${img ? `<img src="${escapeAttr(img)}" alt="${escapeAttr(p.name)}" />` : `<div class="fallback">${fallback}</div>`}</div>
+                <div class="productBody">
+                  <div class="productTop">
+                    <h3 class="productName">${escapeHtml(p.name)}</h3>
+                    <div class="productPrice">${formatMoney(p.price)}</div>
+                  </div>
+                  <p class="productDesc">${escapeHtml(p.description || 'No description')}</p>
+                  <div class="productFooter">
+                    <span class="tag">${escapeHtml(catName)}</span>
+                    <span>${available ? 'Available' : 'Unavailable'}</span>
+                  </div>
+                </div>
+              </button>
+            `;
+          }).join('') : `<div class="emptyState">No products found.</div>`}
+        </div>
+      </div>
+    `;
+    openModal(tableLabelFor(table), 'Add products to the table order.', body, true);
+  }
+
+  function setOrderSearch(value) {
+    state.searchProducts = value || '';
+    saveState();
+    refreshVisibleProductBrowser();
+  }
+
+  function setOrderCategory(id) {
+    state.activeCategoryId = id;
+    saveState();
+    refreshVisibleProductBrowser();
+  }
+
+  function setPickerSearch(value) {
+    state.searchProducts = value || '';
+    saveState();
+    refreshVisibleProductBrowser();
+  }
+
+  function setPickerCategory(id) {
+    state.activeCategoryId = id;
+    saveState();
+    refreshVisibleProductBrowser();
+  }
+
+function openTakeawayHub() {
+  state.modalContext = 'takeaway-hub';
+  saveState();
+  const takeaways = state.activeOrders
+    .filter(order => order && order.type === 'takeaway' && order.status !== 'paid')
+    .sort((a, b) => (b.sequenceNo || 0) - (a.sequenceNo || 0) || b.createdAt - a.createdAt);
+
+  const body = `
+    <div class="adminForm" style="gap:12px">
+      <button class="mini primary" onclick="window.__1911.createAndOpenTakeaway()">＋ New Takeaway</button>
+      <div class="historyList">
+        ${takeaways.length ? takeaways.map(order => `
+          <button class="historyItem" onclick="window.__1911.openTakeawayFlow('${order.id}')">
+            <div class="historyItemTop">
+              <strong>${escapeHtml(orderDisplayLabel(order))}</strong>
+              <span class="historyBadge">${order.paymentStatus === 'awaiting_payment' ? 'Awaiting payment' : 'Open'}</span>
+            </div>
+            <div class="historyMeta">${formatDateTime(order.createdAt)}</div>
+            <div class="historyMeta">${order.itemCount || 0} item${(order.itemCount || 0) === 1 ? '' : 's'} · ${formatMoney(order.total || 0)}</div>
+            ${order.notes ? `<div class="historyMeta">Note: ${escapeHtml(order.notes)}</div>` : ''}
+          </button>
+        `).join('') : `<div class="emptyState">No active takeaway orders.</div>`}
+      </div>
+    </div>
+  `;
+  openModal('TAKEAWAY', 'Open an active takeaway order or create a new one.', body, true);
+}
+
+function createAndOpenTakeaway() {
+  const order = createTakeaway();
+  state.currentOrderId = order.id;
+  saveState();
+  openTakeawayFlow(order.id);
+}
+
+function openTakeawayFlow(orderId = null) {
+  const resolved = orderId ? getOrderById(orderId) : currentOrder();
+  const order = resolved && resolved.type === 'takeaway' ? resolved : null;
+  if (!order) {
+    openTakeawayHub();
+    return;
+  }
+  state.modalContext = 'takeaway-flow';
+  state.flowStage = 'order';
+  state.activeTableFlowId = null;
+  state.pendingTableId = null;
+  state.orderEditMode = false;
+  state.currentOrderId = order.id;
+  saveState();
+  openModal('TAKEAWAY', `${order.itemCount || 0} item${(order.itemCount || 0) === 1 ? '' : 's'} · ${formatMoney(order.total || 0)}`, renderTakeawayFlowBody(order.id), true);
+}
+
+function renderTakeawayFlowBody(orderId) {
+  return renderOrderWorkspace(orderId, 'takeaway');
+}
+
+function payOrCloseTakeaway() {
+  const order = currentOrder();
+  if (!order || !order.items || !order.items.length) {
+    uxCloseModal();
+    return;
+  }
+  state.currentOrderId = order.id;
+  saveState();
+  openCheckoutModal(order.id);
+}
+
+  function openHistoryHub() {
+    state.modalContext = 'history';
+    saveState();
+    const query = (state.searchHistory || '').trim().toLowerCase();
+    const range = state.historyRange || 'all';
+    const orders = filteredHistory(range)
+      .filter(order => {
+        if (!query) return true;
+        const hay = [
+          order.code, order.tableLabel, order.type, order.paymentMethod,
+          order.staffPaidName || order.staffCreatedName || '',
+          formatMoney(order.total), formatMoney(order.subtotal),
+          order.notes || '',
+          ...(order.items || []).map(i => `${i.productName} ${i.note || ''}`)
+        ].join(' ').toLowerCase();
+        return hay.includes(query);
+      })
+      .sort((a, b) => b.paidAt - a.paidAt);
+
+    const body = `
+      <div class="adminForm" style="gap:12px">
+        <div class="toolbar" style="margin:0">
+          <input class="input" id="historySearchModal" type="search" placeholder="Search order ID, table, item, staff, payment..." value="${escapeAttr(state.searchHistory || '')}" oninput="window.__1911.setHistorySearch(this.value)" />
+          <select class="select" id="historyRangeModal" onchange="window.__1911.setHistoryRange(this.value)">
+            <option value="all" ${range === 'all' ? 'selected' : ''}>All time</option>
+            <option value="today" ${range === 'today' ? 'selected' : ''}>Today</option>
+            <option value="week" ${range === 'week' ? 'selected' : ''}>Last 7 days</option>
+            <option value="month" ${range === 'month' ? 'selected' : ''}>This month</option>
+          </select>
+        </div>
+        <div class="historyList">
+          ${orders.length ? orders.map(order => renderHistoryCard(order)).join('') : `<div class="emptyState">No orders found.</div>`}
+        </div>
+      </div>
+    `;
+    openModal('Order History', 'Search past receipts and completed orders.', body, true);
+  }
+
+  function setHistorySearch(value) {
+    state.searchHistory = value || '';
+    saveState();
+    if (state.modalContext === 'history') openHistoryHub();
+  }
+
+  function setHistoryRange(value) {
+    state.historyRange = value || 'all';
+    saveState();
+    if (state.modalContext === 'history') openHistoryHub();
+  }
+
+  function openMenuHub() {
+    state.modalContext = 'menu';
+    saveState();
+    openModal('1911 Menu', 'Quick access to customer menu and menu management.', `
+      <div class="adminForm">
+        <button class="mini primary" onclick="window.open('https://roush750.github.io/1911-Menu/','_blank')">Open Customer Menu</button>
+        <button class="mini ghost" onclick="window.__1911.openAdminProducts()">Manage Menu in Admin</button>
+      </div>
+    `, true);
+  }
+
+  function openAdminProducts() {
+    state.adminTab = 'products';
+    saveState();
+    openAdmin();
+  }
+
+  function closeTableFlowModal() {
+    uxCloseModal();
+  }
+
+  function uxCloseModal() {
+    legacyCloseModal();
+    if (state.modalContext === 'table-flow') {
+      state.pendingTableId = null;
+      state.activeTableFlowId = null;
+    }
+    if (state.modalContext === 'takeaway-flow') {
+      state.activeTableFlowId = null;
+      state.pendingTableId = null;
+    }
+    state.orderEditMode = false;
+    state.flowStage = 'order';
+    state.modalContext = null;
+    saveState();
+  }
+
+  function uxAddProduct(productId, forceVariant = null) {
+    const product = getProductById(productId);
+    if (!product) return;
+    if (!product.available) {
+      toast('This product is currently unavailable.');
+      return;
+    }
+
+    if (Array.isArray(product.variants) && product.variants.length && !forceVariant) {
+      return openVariantModal(product);
+    }
+
+    let order = currentOrder();
+    let tableId = order?.tableId || null;
+    if (!order) {
+      const flowTableId = state.modalContext === 'table-flow' ? getFlowTableId() : null;
+      if (flowTableId) {
+        tableId = flowTableId;
+        order = getActiveOrderByTableId(flowTableId) || createOrder('dine-in', flowTableId);
+      } else {
+        order = createTakeaway();
+      }
+    }
+
+    const variant = forceVariant || null;
+    const variantName = variant?.name || '';
+    const variantDelta = Number(variant?.priceDelta || 0);
+    const existing = order.items.find(item => item.productId === product.id && item.variantName === variantName);
+    if (existing) existing.qty += 1;
+    else {
+      order.items.push({
+        key: uid('itm'),
+        productId: product.id,
+        productName: product.name,
+        unitPrice: Number(product.price || 0),
+        variantName,
+        variantPriceDelta: variantDelta,
+        qty: 1,
+        note: '',
+        lineTotal: 0,
+        categoryId: product.categoryId,
+        description: product.description,
+        image: product.image
+      });
+    }
+
+    recalcOrder(order);
+    order.updatedAt = Date.now();
+    saveState();
+    renderAll();
+
+    if (state.modalContext === 'table-flow' && state.activeTableFlowId) {
+      state.flowStage = 'order';
+      state.currentOrderId = order.id;
+      saveState();
+      openTableOrderModal(state.activeTableFlowId);
+    } else if (state.modalContext === 'takeaway-flow') {
+      state.flowStage = 'order';
+      state.currentOrderId = order.id;
+      saveState();
+      openTakeawayFlow();
+    }
+    toast(`${product.name} added to order.`);
+  }
+
+  function uxIncreaseItem(orderId, itemKey) {
+    legacyIncreaseItem(orderId, itemKey);
+    refreshTableFlowIfOpen();
+  }
+
+  function uxDecreaseItem(orderId, itemKey) {
+    legacyDecreaseItem(orderId, itemKey);
+    refreshTableFlowIfOpen();
+  }
+
+  function uxRemoveItem(orderId, itemKey) {
+    legacyRemoveItem(orderId, itemKey);
+    refreshTableFlowIfOpen();
+  }
+
+  function uxEditItemNote(orderId, itemKey) {
+    legacyEditItemNote(orderId, itemKey);
+    refreshTableFlowIfOpen();
+  }
+
+  function uxSelectTable(tableId) {
+    const order = getActiveOrderByTableId(tableId);
+    state.orderEditMode = false;
+    state.activeTableFlowId = tableId;
+    state.pendingTableId = tableId;
+    state.modalContext = 'table-flow';
+    state.flowStage = 'order';
+    if (order) {
+      state.currentOrderId = order.id;
+    } else {
+      state.currentOrderId = null;
+    }
+    saveState();
+    openTableOrderModal(tableId);
+  }
+
+  function uxAddVariant(productId, idx) {
+    const product = getProductById(productId);
+    if (!product) return;
+    const variant = product.variants?.[idx];
+    if (!variant) return;
+    const flowContext = state.modalContext;
+    const flowTable = state.activeTableFlowId;
+    const flowStage = state.flowStage;
+    legacyCloseModal();
+    state.modalContext = flowContext;
+    state.activeTableFlowId = flowTable;
+    state.flowStage = flowStage;
+    state.pendingTableId = flowTable;
+    saveState();
+    uxAddProduct(productId, variant);
+  }
+
+  window.__1911.openMenuHub = openMenuHub;
+  window.__1911.openTakeawayHub = openTakeawayHub;
+  window.__1911.createAndOpenTakeaway = createAndOpenTakeaway;
+  window.__1911.openTakeawayFlow = openTakeawayFlow;
+  window.__1911.openHistoryHub = openHistoryHub;
+  window.__1911.openTableOrderModal = openTableOrderModal;
+  window.__1911.openProductPicker = openProductPicker;
+  window.__1911.toggleTableEditMode = toggleTableEditMode;
+  window.__1911.closeOrderToCheckout = closeOrderToCheckout;
+  window.__1911.payOrCloseTable = payOrCloseTable;
+  window.__1911.payOrCloseTakeaway = payOrCloseTakeaway;
+  window.__1911.focusOrderMenu = focusOrderMenu;
+  window.__1911.setOrderSearch = setOrderSearch;
+  window.__1911.setOrderCategory = setOrderCategory;
+  window.__1911.setOrderNote = setOrderNote;
+  window.__1911.setPickerSearch = setPickerSearch;
+  window.__1911.setPickerCategory = setPickerCategory;
+  window.__1911.setHistorySearch = setHistorySearch;
+  window.__1911.setHistoryRange = setHistoryRange;
+  window.__1911.openAdminProducts = openAdminProducts;
+  window.__1911.setReportMode = setReportMode;
+  window.__1911.setReportDate = setReportDate;
+  window.__1911.setReportMonth = setReportMonth;
+  window.__1911.shiftReportDate = shiftReportDate;
+  window.__1911.shiftReportWeek = shiftReportWeek;
+  window.__1911.shiftReportMonth = shiftReportMonth;
+  window.__1911.openReportOrders = openReportOrders;
+  window.__1911.saveShiftDuty = saveShiftDuty;
+  window.__1911.closeModal = uxCloseModal;
+  window.__1911.addProduct = uxAddProduct;
+  window.__1911.addVariant = uxAddVariant;
+  window.__1911.increaseItem = uxIncreaseItem;
+  window.__1911.decreaseItem = uxDecreaseItem;
+  window.__1911.removeItem = uxRemoveItem;
+  window.__1911.editItemNote = uxEditItemNote;
+  window.__1911.selectTable = uxSelectTable;
+
+})();
+</script>
+</body>
+</html>
